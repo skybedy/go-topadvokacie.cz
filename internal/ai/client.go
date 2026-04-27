@@ -9,7 +9,12 @@ import (
 const SystemPrompt = "Jsi AI asistent pro českého komerčního právníka. Nejsi advokát. Pomáháš analyzovat dokumenty, strukturovat informace, upozorňovat na rizika a navrhovat otázky. Odpovídej česky, strukturovaně a opatrně. Nepřidávej fakta, která nejsou ve vstupu."
 
 type Client interface {
-	Analyze(ctx context.Context, action string, inputA string, inputB string) (model.Result, error)
+	Analyze(ctx context.Context, action string, inputA string, inputB string, options Options) (model.Result, error)
+}
+
+type Options struct {
+	DetailLevel string
+	Perspective string
 }
 
 type Action struct {
@@ -96,6 +101,54 @@ var PromptLibrary = []PromptTemplate{
 		Category:    "Extrakce",
 		Description: "Vytahuje kdo má co udělat, do kdy a co hrozí při nesplnění.",
 		Instruction: "Extrahuj z dokumentu povinnosti a lhůty. U každé položky uveď povinnou stranu, obsah povinnosti, lhůtu nebo spouštěcí událost, sankci nebo následek a míru nejasnosti.",
+	},
+	{
+		ID:          "prompt-red-flags",
+		Label:       "Red flags před podpisem",
+		Version:     "v1.0",
+		Category:    "Rizika",
+		Description: "Krátký seznam nejzásadnějších bodů, které má klient vidět před rozhodnutím.",
+		Instruction: "Najdi maximálně 5 nejdůležitějších red flags před podpisem. U každého bodu uveď, proč je problém prakticky důležitý, jaký může mít obchodní dopad a jaký další krok doporučuješ právníkovi ověřit.",
+	},
+	{
+		ID:          "prompt-negotiation-position",
+		Label:       "Vyjednávací pozice",
+		Version:     "v1.0",
+		Category:    "Vyjednávání",
+		Description: "Připravuje mírnou, standardní a tvrdší variantu požadavku ke klíčovým ustanovením.",
+		Instruction: "Vyber ustanovení vhodná k vyjednávání. U každého bodu navrhni mírnou variantu požadavku, standardní kompromis a tvrdší vyjednávací pozici. Přidej stručný argument pro klienta a realistickou reakci protistrany.",
+	},
+	{
+		ID:          "prompt-client-call",
+		Label:       "Příprava hovoru s klientem",
+		Version:     "v1.0",
+		Category:    "Klientská práce",
+		Description: "Agenda hovoru, otázky, rozhodnutí a podklady, které má klient dodat.",
+		Instruction: "Připrav 15minutový hovor s klientem. Vytvoř agendu, otázky na klienta, body k obchodnímu rozhodnutí, podklady k doplnění a doporučený další krok po hovoru.",
+	},
+	{
+		ID:          "prompt-missing-clauses",
+		Label:       "Co ve smlouvě chybí",
+		Version:     "v1.0",
+		Category:    "Kontrola",
+		Description: "Upozorní na oblasti, které ve vstupu nejsou řešené nebo jsou nejasné.",
+		Instruction: "Zkontroluj, které obvyklé oblasti nejsou ve vstupu řešené nebo jsou nejasné. Nevyvozuj, že jde vždy o chybu. U každé položky napiš, proč může být důležitá a jakou otázku má právník položit klientovi.",
+	},
+	{
+		ID:          "prompt-review-comments",
+		Label:       "Komentáře do revize",
+		Version:     "v1.0",
+		Category:    "Revize",
+		Description: "Navrhuje stručné komentáře k ustanovením pro práci v revizním režimu.",
+		Instruction: "Navrhni komentáře do revize smlouvy. Každý komentář napiš věcně a použitelně pro právníka: co upravit, proč, jaké rozhodnutí je potřeba a co případně ověřit u klienta.",
+	},
+	{
+		ID:          "prompt-executive-summary",
+		Label:       "Executive summary pro jednatele",
+		Version:     "v1.0",
+		Category:    "Rozhodování",
+		Description: "Manažerské shrnutí pro rychlé obchodní rozhodnutí.",
+		Instruction: "Připrav executive summary pro jednatele nebo vedení. Stručně uveď, zda dokument podepsat, nepodepsat, nebo podepsat po úpravách. Přidej tři hlavní rizika, obchodní dopad a rozhodnutí, která musí udělat klient.",
 	},
 }
 

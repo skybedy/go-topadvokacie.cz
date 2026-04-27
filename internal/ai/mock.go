@@ -13,7 +13,7 @@ func NewMockAIClient() *MockAIClient {
 	return &MockAIClient{}
 }
 
-func (c *MockAIClient) Analyze(ctx context.Context, action string, inputA string, inputB string) (model.Result, error) {
+func (c *MockAIClient) Analyze(ctx context.Context, action string, inputA string, inputB string, options Options) (model.Result, error) {
 	select {
 	case <-ctx.Done():
 		return model.Result{}, ctx.Err()
@@ -56,6 +56,39 @@ func (c *MockAIClient) Analyze(ctx context.Context, action string, inputA string
 		return result("Prompt knihovna: Extrakce povinností a lhůt", "Prompt vytáhne z dokumentu praktickou tabulku kdo má co udělat, do kdy a co hrozí při nesplnění.", []model.Section{
 			{"Povinnosti", []string{"Dodavatel: dodat plnění podle smlouvy do sjednaného termínu.", "Objednatel: zaplatit cenu ve lhůtě splatnosti.", "Obě strany: zachovat mlčenlivost, pokud je sjednána."}},
 			{"Lhůty a následky", []string{"Prodlení s dodáním může spustit smluvní pokutu.", "Prodlení s platbou může vést k úroku, výpovědi nebo pozastavení plnění."}},
+		}), nil
+	case "prompt-red-flags":
+		return resultWithOptions("Prompt knihovna: Red flags před podpisem", "Krátký výstup pro rychlé rozhodnutí klienta. V reálném režimu by AI vybrala jen nejzásadnější rizika z vloženého textu.", options, []model.Section{
+			{"Top red flags", []string{"Neomezená odpovědnost může vytvořit nepřiměřené ekonomické riziko.", "Smluvní pokuta bez jasného stropu může být obchodně tvrdá.", "Chybějící akceptační proces komplikuje dokazování, zda bylo plnění řádně předáno.", "Jednostranná změna podmínek bez možnosti ukončení je bod k vyjednávání.", "Nejasné ukončení smlouvy může klienta svázat déle, než čeká."}},
+			{"Doporučený další krok", []string{"Ověřit s klientem, která rizika jsou obchodně přijatelná a která je nutné upravit před podpisem."}},
+		}), nil
+	case "prompt-negotiation-position":
+		return resultWithOptions("Prompt knihovna: Vyjednávací pozice", "Prompt převádí právní rizika do konkrétních vyjednávacích požadavků.", options, []model.Section{
+			{"Odpovědnost", []string{"Mírná varianta: doplnit rozumný limit odpovědnosti.", "Standardní kompromis: limit na výši odměny za posledních 12 měsíců.", "Tvrdší pozice: vyloučit nepřímé škody a limitovat odpovědnost kromě úmyslu."}},
+			{"Smluvní pokuta", []string{"Mírná varianta: snížit sazbu nebo zavést celkový strop.", "Standardní kompromis: navázat pokutu na závažná porušení.", "Tvrdší pozice: požadovat odstranění pokuty a ponechat jen náhradu škody."}},
+			{"Argumentace", []string{"Pro klienta: cílem není oslabit smlouvu, ale nastavit předvídatelné riziko.", "Možná reakce protistrany: bez sankce nebude mít závazek dostatečnou váhu."}},
+		}), nil
+	case "prompt-client-call":
+		return resultWithOptions("Prompt knihovna: Příprava hovoru s klientem", "Prompt připraví právníka na rychlý a věcný call nad dokumentem.", options, []model.Section{
+			{"Agenda 15 minut", []string{"1. Potvrdit obchodní cíl smlouvy.", "2. Projít tři hlavní rizika.", "3. Rozhodnout, které body vyjednávat.", "4. Domluvit další podklady a termín revize."}},
+			{"Otázky na klienta", []string{"Jaká je maximální přijatelná odpovědnost?", "Je důležitější rychlé ukončení, nebo stabilita vztahu?", "Kdo bude prakticky potvrzovat předání plnění?"}},
+			{"Po hovoru", []string{"Připravit revizní komentáře a krátké klientské shrnutí bodů k rozhodnutí."}},
+		}), nil
+	case "prompt-missing-clauses":
+		return resultWithOptions("Prompt knihovna: Co ve smlouvě chybí", "Prompt nehledá jen chyby, ale hlavně oblasti, které je potřeba vědomě potvrdit.", options, []model.Section{
+			{"Chybějící nebo nejasné oblasti", []string{"Akceptační proces: není jasné, jak se potvrdí předání plnění.", "Limit odpovědnosti: pokud chybí, klient potřebuje znát maximální expozici.", "Rozhodné právo a řešení sporů: vhodné ověřit, zda odpovídá dohodě.", "Kontaktní osoby a doručování: prakticky důležité pro výzvy a reklamace."}},
+			{"Otázky pro klienta", []string{"Bylo vynechání těchto oblastí záměrné?", "Existuje příloha nebo objednávka, která tyto body řeší mimo hlavní smlouvu?"}},
+		}), nil
+	case "prompt-review-comments":
+		return resultWithOptions("Prompt knihovna: Komentáře do revize", "Prompt připraví pracovní komentáře, které právník může upravit a vložit do revizního režimu.", options, []model.Section{
+			{"Komentáře", []string{"Doporučuji doplnit přesný akceptační proces, protože bez něj může být sporné, kdy bylo plnění převzato.", "Prosím potvrdit, zda je výše smluvní pokuty obchodně přijatelná; aktuální formulace může být pro klienta tvrdá.", "Navrhuji doplnit limit odpovědnosti, aby bylo riziko předvídatelné."}},
+			{"Ověřit u klienta", []string{"Zda má klient vyjednávací prostor u odpovědnosti, sankcí a ukončení."}},
+		}), nil
+	case "prompt-executive-summary":
+		return resultWithOptions("Prompt knihovna: Executive summary pro jednatele", "Manažerský výstup převádí právní rozbor do rozhodnutí, ne do dlouhého stanoviska.", options, []model.Section{
+			{"Doporučení", []string{"Podepsat až po úpravách odpovědnosti, sankcí a akceptačního procesu."}},
+			{"Tři hlavní rizika", []string{"Neomezená odpovědnost může vytvořit nepřiměřené finanční riziko.", "Smluvní pokuta může být vysoká vzhledem k významu porušení.", "Nejasné předání plnění může vést ke sporu o splnění."}},
+			{"Rozhodnutí vedení", []string{"Stanovit maximální akceptovatelný limit odpovědnosti.", "Rozhodnout, zda je obchodně nutné trvat na snížení sankcí.", "Potvrdit, kdo bude za klienta přebírat plnění."}},
 		}), nil
 	case "client-summary":
 		return result("Shrnutí pro klienta", "Dokument upravuje základní obchodní vztah mezi stranami. Klient by měl věnovat pozornost rozsahu povinností, lhůtám, sankcím a možnostem ukončení.", []model.Section{
@@ -122,6 +155,38 @@ func result(title, summary string, sections []model.Section) model.Result {
 			"Výstup je pracovní podklad pro právníka, nikoli právní stanovisko.",
 		},
 		Raw: rawPreview(summary),
+	}
+}
+
+func resultWithOptions(title, summary string, options Options, sections []model.Section) model.Result {
+	sections = append([]model.Section{
+		{"Nastavení výstupu", []string{
+			"Délka: " + mockDetailLabel(options.DetailLevel),
+			"Perspektiva: " + mockPerspectiveLabel(options.Perspective),
+		}},
+	}, sections...)
+	return result(title, summary, sections)
+}
+
+func mockDetailLabel(value string) string {
+	switch value {
+	case "brief":
+		return "stručně"
+	case "detailed":
+		return "detailně"
+	default:
+		return "standardně"
+	}
+}
+
+func mockPerspectiveLabel(value string) string {
+	switch value {
+	case "client":
+		return "pro klienta"
+	case "negotiation":
+		return "pro vyjednávání"
+	default:
+		return "pro právníka"
 	}
 }
 

@@ -55,7 +55,9 @@ Aplikace obsahuje osm akcí:
 - Převod právního textu do srozumitelné řeči
 - Porovnání dvou verzí dokumentu
 
-Dokument lze vložit ručně nebo nahrát jako textový soubor `.txt`, `.md`, `.csv`, `.rst` nebo `.log`. PDF/DOCX import je záměrně ponechaný do produkční roadmapy, protože vyžaduje specializované parsování.
+Dokument lze vložit ručně nebo nahrát jako `.txt`, `.md`, `.csv`, `.rst`, `.log`, `.docx` nebo `.pdf`. Po výběru souboru se jeho text nejdřív načte do textového pole, takže právník vidí obsah před spuštěním analýzy. DOCX import používá jednoduché ZIP/XML vytěžení textu přímo v Go. PDF import používá lokální nástroj `pdftotext` z balíčku `poppler-utils`, pokud je v systému dostupný. Starší binární `.doc` zatím podporovaný není; dokument je vhodné uložit jako `.docx` nebo PDF.
+
+Pracovní panel navíc umožňuje nastavit délku výstupu (`stručně`, `standardně`, `detailně`) a perspektivu (`pro právníka`, `pro klienta`, `pro vyjednávání`). Výstupní sekce lze kopírovat samostatně do schránky.
 
 ## Prompt knihovna
 
@@ -67,7 +69,13 @@ Součástí dema je i osobní právnická prompt knihovna. Nejde o další chat,
 - protiargumentace protistrany,
 - checklist před podpisem,
 - revize obchodních podmínek,
-- extrakce povinností a lhůt.
+- extrakce povinností a lhůt,
+- red flags před podpisem,
+- vyjednávací pozice,
+- příprava hovoru s klientem,
+- kontrola chybějících oblastí ve smlouvě,
+- komentáře do revize,
+- executive summary pro jednatele.
 
 V testovací verzi jsou prompty uložené přímo v Go kódu v `internal/ai/client.go`. V produkci by dávalo smysl přesunout je do databáze nebo verzovaných souborů, přidat vlastní prompty pro konkrétního právníka a měřit kvalitu výstupů na ukázkových dokumentech.
 
@@ -94,7 +102,7 @@ Pro produkční nasazení doporučuji řešit minimálně:
 
 ## Produkční roadmapa
 
-- PDF/DOCX import
+- robustnější PDF/DOCX import včetně složitějšího formátování a skenovaných dokumentů
 - vlastní vzory a knihovna klauzulí
 - RAG nad interní znalostní bází
 - historie analýz

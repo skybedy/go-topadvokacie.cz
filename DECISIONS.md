@@ -58,11 +58,35 @@ Workflow a prompt knihovna jsou aktualne v `internal/ai/client.go`.
 
 Duvod: pro MVP je to nejjednodussi a nejprehlednejsi. Pozdeji muze davat smysl presun do databaze nebo verzovanych souboru.
 
-### Upload je omezen na textove soubory
+### Vystup ma nastavitelny rozsah a perspektivu
 
-Podporovane jsou `.txt`, `.md`, `.markdown`, `.csv`, `.rst` a `.log`. PDF/DOCX je roadmapa.
+Pracovni panel podporuje delku vystupu `brief`, `standard` a `detailed` a perspektivu `lawyer`, `client` a `negotiation`.
 
-Duvod: PDF/DOCX vyzaduji specializovane parsovani a zvysily by slozitost mimo hlavni cil dema.
+Duvod: stejne vstupni pravni zneni muze pravnik potrebovat jako interni analyzu, klientsky srozumitelny vystup nebo vyjednavaci podklad. Tato volba lepe ukazuje rozdil mezi obecnym chatem a pracovnim nastrojem.
+
+### Demo rozsiruje prompt knihovnu misto pridavani slozite infrastruktury
+
+Byly pridany prakticke prompty: red flags pred podpisem, vyjednavaci pozice, priprava hovoru s klientem, chybejici oblasti smlouvy, komentare do revize a executive summary pro jednatele.
+
+Duvod: pro Filipovo demo ma vetsi hodnotu sirsi sada konkretnich pravnickych workflow nez predcasna databaze, prihlaseni nebo produkcni infrastruktura.
+
+### Kopirovani sekci je preferovana mala UX funkce
+
+Vystupni karty maji tlacitko pro kopirovani jednotlive sekce do schranky.
+
+Duvod: pravnik bude casti vystupu pravdepodobne presouvat do e-mailu, poznamek, revize nebo klientskych podkladu. Kopirovani ukazuje praktickou pouzitelnost bez integrace do e-mailu.
+
+### Upload podporuje text, DOCX a PDF v MVP rezimu
+
+Podporovane jsou `.txt`, `.md`, `.markdown`, `.csv`, `.rst`, `.log`, `.docx` a `.pdf`. DOCX se parsuje primo v Go pres ZIP/XML. PDF se prevadi pres lokalni `pdftotext` z balicku `poppler-utils`. Stary `.doc` zatim podporovany neni.
+
+Duvod: Filip bude pravdepodobne pracovat hlavne s PDF a Word dokumenty. Tahle MVP cesta prida prakticky wow efekt bez tezke infrastruktury a bez velke Go zavislosti.
+
+### Soubor se pred analyzou nacita do viditelneho textoveho pole
+
+Frontend po vyberu souboru vola `/upload-text`, zobrazi stav nacitani a vlozi vytazeny text do textarea. Teprve potom uzivatel spousti analyzu.
+
+Duvod: pravnik vidi, co se z dokumentu opravdu nacetlo, muze text rychle zkontrolovat nebo upravit a demo pusobi kontrolovaneji nez skryty upload az pri odeslani formulare.
 
 ### Bezpecnostni upozorneni je soucast produktu
 

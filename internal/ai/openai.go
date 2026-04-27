@@ -38,7 +38,7 @@ func NewOpenAIClientWithTimeout(apiKey, modelName string, timeout time.Duration)
 	}
 }
 
-func (c *OpenAIClient) Analyze(ctx context.Context, action string, inputA string, inputB string) (model.Result, error) {
+func (c *OpenAIClient) Analyze(ctx context.Context, action string, inputA string, inputB string, options Options) (model.Result, error) {
 	if strings.TrimSpace(c.apiKey) == "" {
 		return model.Result{}, errors.New("missing OpenAI API key")
 	}
@@ -47,7 +47,7 @@ func (c *OpenAIClient) Analyze(ctx context.Context, action string, inputA string
 		Model: c.model,
 		Messages: []chatMessage{
 			{Role: "system", Content: SystemPrompt},
-			{Role: "user", Content: buildPrompt(action, inputA, inputB)},
+			{Role: "user", Content: buildPrompt(action, inputA, inputB, options)},
 		},
 		ResponseFormat: map[string]string{"type": "json_object"},
 	}
@@ -132,10 +132,12 @@ func sanitizeOpenAIError(body []byte) string {
 	return text
 }
 
-func buildPrompt(action string, inputA string, inputB string) string {
+func buildPrompt(action string, inputA string, inputB string, options Options) string {
 	selected := ActionByID(action)
 	var b strings.Builder
 	fmt.Fprintf(&b, "Akce: %s\n", selected.Label)
+	fmt.Fprintf(&b, "Preferovaná délka výstupu: %s\n", outputDetailLabel(options.DetailLevel))
+	fmt.Fprintf(&b, "Perspektiva výstupu: %s\n", outputPerspectiveLabel(options.Perspective))
 	if prompt, ok := PromptTemplateByID(action); ok {
 		fmt.Fprintf(&b, "Prompt knihovna: %s %s\n", prompt.Label, prompt.Version)
 		fmt.Fprintf(&b, "Kategorie: %s\n", prompt.Category)
@@ -144,7 +146,7 @@ func buildPrompt(action string, inputA string, inputB string) string {
 	b.WriteString("\n")
 	b.WriteString("Vrať výhradně validní JSON ve tvaru:\n")
 	b.WriteString(`{"title":"...","summary":"...","sections":[{"title":"...","items":["..."]}],"warnings":["..."],"raw":""}`)
-	b.WriteString("\n\nPracuj pouze s informacemi ze vstupu. Když něco chybí, napiš to jako nejasnost nebo otázku.\n\n")
+	b.WriteString("\n\nPřizpůsob rozsah a tón zvolené délce a perspektivě. Pracuj pouze s informacemi ze vstupu. Když něco chybí, napiš to jako nejasnost nebo otázku.\n\n")
 	b.WriteString("Dokument A:\n")
 	b.WriteString(inputA)
 	if selected.NeedsSecond || strings.TrimSpace(inputB) != "" {
@@ -152,6 +154,28 @@ func buildPrompt(action string, inputA string, inputB string) string {
 		b.WriteString(inputB)
 	}
 	return b.String()
+}
+
+func outputDetailLabel(value string) string {
+	switch value {
+	case "brief":
+		return "stručně"
+	case "detailed":
+		return "detailně"
+	default:
+		return "standardně"
+	}
+}
+
+func outputPerspectiveLabel(value string) string {
+	switch value {
+	case "client":
+		return "pro klienta, s důrazem na praktické dopady"
+	case "negotiation":
+		return "pro vyjednávání, s důrazem na pozice a argumenty"
+	default:
+		return "pro právníka, s důrazem na pracovní právní analýzu"
+	}
 }
 
 type chatRequest struct {

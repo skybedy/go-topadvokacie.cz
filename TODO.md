@@ -5,25 +5,28 @@
 - [ ] Udrzet demo spustitelne jednim prikazem `go run ./cmd/lexpilot`.
 - [ ] Pri kazde vetsi zmene aktualizovat `PROJECT_CONTEXT.md`, `TODO.md` a `DECISIONS.md`.
 - [ ] Overovat zmeny pres `go test ./...`.
-- [ ] Pripravit kratky demo scenar pro Filipa: analyza smlouvy, otazky na klienta, srozumitelne shrnuti, porovnani dvou verzi.
-- [ ] Zvazit tlacitko pro kopirovani vystupu nebo jednotlivych sekci.
+- [x] Pripravit kratky demo scenar pro Filipa: analyza smlouvy, red flags, priprava hovoru, porovnani dvou verzi.
+- [x] Pridat tlacitko pro kopirovani jednotlivych vystupnich sekci.
 
 ## Dalsi kroky
 
-- [ ] Pridat volbu delky vystupu: strucne, standardne, detailne.
-- [ ] Pridat volbu perspektivy vystupu: pro pravnika, pro klienta, pro vyjednavani.
-- [ ] Pridat prompt "Vyjednavaci pozice" s mirnou, standardni a tvrdsi variantou pozadavku.
-- [ ] Pridat prompt "Red flags pro klienta" s maximalne peti zasadnimi body.
-- [ ] Pridat prompt "Priprav call s klientem" s agendou, riziky a otazkami.
-- [ ] Pridat prompt "Co ve smlouve chybi" pro identifikaci neupravenych nebo nejasnych oblasti.
-- [ ] Pridat prompt "Komentar do revize" pro navrhy komentaru k ustanovenim.
-- [ ] Pridat prompt "Executive summary pro jednatele".
+- [x] Pridat volbu delky vystupu: strucne, standardne, detailne.
+- [x] Pridat volbu perspektivy vystupu: pro pravnika, pro klienta, pro vyjednavani.
+- [x] Pridat prompt "Vyjednavaci pozice" s mirnou, standardni a tvrdsi variantou pozadavku.
+- [x] Pridat prompt "Red flags pro klienta" s maximalne peti zasadnimi body.
+- [x] Pridat prompt "Priprav call s klientem" s agendou, riziky a otazkami.
+- [x] Pridat prompt "Co ve smlouve chybi" pro identifikaci neupravenych nebo nejasnych oblasti.
+- [x] Pridat prompt "Komentar do revize" pro navrhy komentaru k ustanovenim.
+- [x] Pridat prompt "Executive summary pro jednatele".
 - [ ] Zlepsit ukazkove dokumenty tak, aby lepe demonstrovaly rozdil mezi workflow.
 - [ ] Doplnit zakladni unit testy pro `ActionByID`, `PromptTemplateByID`, upload validaci a `.env` parsing.
+- [ ] Doladit demo scenar pro porovnani dvou verzi tak, aby umel predvyplnit i dokument B.
 
 ## Pozdeji
 
-- [ ] PDF/DOCX import pomoci vhodnych parseru.
+- [x] MVP PDF/DOCX import: DOCX pres ZIP/XML, PDF pres lokalni `pdftotext`.
+- [x] Nacitat uploadovany soubor nejdriv do viditelneho textarea pole pred spustenim analyzy.
+- [ ] Robustnejsi PDF/DOCX import pro slozite dokumenty, tabulky a skenovana PDF.
 - [ ] Export vystupu do DOCX/PDF.
 - [ ] Historie analyz.
 - [ ] Sprava promptu pres UI.
