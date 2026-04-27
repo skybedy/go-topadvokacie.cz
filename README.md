@@ -30,6 +30,29 @@ OPENAI_MODEL=gpt-4o-mini
 OPENAI_TIMEOUT_SECONDS=180
 ```
 
+## Produkční build a deploy
+
+Na Ubuntu VPS je nejjednodušší buildnout Go binárku a spouštět ji přes systemd za Nginx reverse proxy:
+
+```bash
+go test ./...
+go build -o lexpilot ./cmd/lexpilot
+```
+
+Pro PDF upload nainstalujte systémový parser:
+
+```bash
+sudo apt install poppler-utils
+```
+
+Součástí projektu je jednoduchý deploy script:
+
+```bash
+./deploy.sh
+```
+
+Script provede `git pull`, `go test ./...`, build binárky `lexpilot` a pokusí se restartovat systemd službu `lexpilot.service`, pokud na serveru existuje. `.env` zůstává mimo git a musí být připravený na serveru.
+
 ## Struktura
 
 ```text

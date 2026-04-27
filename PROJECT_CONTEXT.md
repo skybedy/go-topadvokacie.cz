@@ -20,8 +20,8 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 - Upload souboru probiha pred analyzou pres endpoint `/upload-text`; vytazeny text se vlozi do viditelneho textarea pole a az potom uzivatel spousti analyzu.
 - `.env.example` nastavuje `OPENAI_MODEL=gpt-5-nano` a `OPENAI_TIMEOUT_SECONDS=180`.
 - Go modul se jmenuje `lexdemo`.
-- Projekt aktualne nema testovaci soubory, ale `go test ./...` prochazi.
-- Adresar momentalne neni inicializovany jako git repozitar, proto `git status` selze s hlaskou `not a git repository`.
+- Projekt ma zakladni testy pro upload/parser v `internal/web/server_test.go`.
+- Adresar je git repozitar na vetvi `main`.
 
 ## Hlavni workflow
 
@@ -66,6 +66,7 @@ Prompt knihovna:
 - `static/app.css` - drobne CSS upravy, hlavne vetsi pismo kvuli citelnosti.
 - `examples/` - fiktivni textove priklady.
 - `README.md` - zakladni dokumentace projektu.
+- `deploy.sh` - jednoduchy deploy script pro Ubuntu VPS: git pull, testy, build a restart systemd sluzby.
 - `.env.example` - priklad konfigurace bez tajnych hodnot.
 
 ## Jak projekt spustit

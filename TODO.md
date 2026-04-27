@@ -26,6 +26,7 @@
 
 - [x] MVP PDF/DOCX import: DOCX pres ZIP/XML, PDF pres lokalni `pdftotext`.
 - [x] Nacitat uploadovany soubor nejdriv do viditelneho textarea pole pred spustenim analyzy.
+- [x] Pridat jednoduchy `deploy.sh` pro Ubuntu VPS.
 - [ ] Robustnejsi PDF/DOCX import pro slozite dokumenty, tabulky a skenovana PDF.
 - [ ] Export vystupu do DOCX/PDF.
 - [ ] Historie analyz.

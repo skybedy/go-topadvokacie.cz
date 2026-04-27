@@ -88,6 +88,12 @@ Frontend po vyberu souboru vola `/upload-text`, zobrazi stav nacitani a vlozi vy
 
 Duvod: pravnik vidi, co se z dokumentu opravdu nacetlo, muze text rychle zkontrolovat nebo upravit a demo pusobi kontrolovaneji nez skryty upload az pri odeslani formulare.
 
+### Deploy script zustava jednoduchy a nedestruktivni
+
+Projekt ma `deploy.sh`, ktery provede `git pull`, `go test ./...`, `go build -o lexpilot ./cmd/lexpilot` a restartuje systemd sluzbu `lexpilot`, pokud existuje.
+
+Duvod: LexPilot je male Go MVP bez Node buildu. Agresivni mazani zdrojaku a `skip-worktree` uklid z jine aplikace by tady pridaly krehkost bez zasadniho prinosu.
+
 ### Bezpecnostni upozorneni je soucast produktu
 
 V aplikaci ma zustat jasna formulace:
