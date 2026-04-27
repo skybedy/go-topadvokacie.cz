@@ -1,0 +1,132 @@
+{{define "home.html"}}
+<!doctype html>
+<html lang="cs">
+<head>{{template "head" .}}</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+  {{template "nav" .}}
+  <main>
+    <section class="border-b border-slate-200 bg-white">
+      <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-14">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">LexPilot Demo</p>
+          <h1 class="mt-3 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">AI pracovní stůl pro Filipa</h1>
+          <p class="mt-5 max-w-3xl text-lg leading-8 text-slate-600">Toto demo ukazuje, jak lze z běžného ChatGPT použití vytvořit strukturovaný právnický workflow nástroj.</p>
+          <div class="mt-7 flex flex-wrap gap-3 text-sm">
+            <span class="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Analýza smluv</span>
+            <span class="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Rizika a změny</span>
+            <span class="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Otázky na klienta</span>
+            <span class="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Prompt knihovna</span>
+          </div>
+        </div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 p-5">
+          <div class="grid gap-3">
+            <div class="flex items-center justify-between rounded-md bg-white p-4 shadow-sm">
+              <span class="text-sm font-medium text-slate-600">Režim</span>
+              {{if .MockMode}}<span class="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">Mock demo</span>{{else}}<span class="rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">OpenAI API</span>{{end}}
+            </div>
+            <div class="rounded-md bg-white p-4 shadow-sm">
+              <p class="text-sm font-medium text-slate-950">Předpřipravené workflow místo ručního promptování</p>
+              <p class="mt-2 text-sm leading-6 text-slate-600">Filip vloží dokument, vybere typ práce a dostane strukturovaný výstup v kartách.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
+      <form method="post" enctype="multipart/form-data" class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-950">Hlavní pracovní panel</h2>
+            <p class="mt-1 text-sm text-slate-500">Vložte dokument, vyberte workflow nebo uložený prompt a spusťte analýzu.</p>
+          </div>
+          <div class="flex gap-2">
+            <a href="/prompts" class="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Prompty</a>
+            <a href="/examples" class="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Ukázky</a>
+          </div>
+        </div>
+
+        {{if .Error}}<div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{.Error}}</div>{{end}}
+
+        <label class="block text-sm font-medium text-slate-700" for="example">Ukázkový dokument</label>
+        <select id="example" name="example" class="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100">
+          <option value="">Vlastní text</option>
+          {{range .Examples}}<option value="{{.ID}}" {{if eq $.SelectedExample .ID}}selected{{end}}>{{.Title}}</option>{{end}}
+        </select>
+
+        <label class="mt-5 block text-sm font-medium text-slate-700" for="input_a">Dokument A</label>
+        <div class="mt-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4">
+          <label class="block text-sm font-medium text-slate-700" for="file_a">Nahrát dokument A z počítače</label>
+          <input id="file_a" name="file_a" type="file" accept=".txt,.md,.markdown,.csv,.rst,.log,text/plain,text/markdown,text/csv" class="mt-2 block w-full cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-100">
+          <p class="mt-2 text-xs text-slate-500">MVP načítá textové soubory (.txt, .md, .csv) do pole níže. PDF/DOCX je v roadmapě.</p>
+        </div>
+        <textarea id="input_a" name="input_a" rows="13" class="mt-2 w-full resize-y rounded-md border border-slate-300 px-3 py-3 text-sm leading-6 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Vložte smlouvu, dodatek, ustanovení nebo jiný právní text...">{{.InputA}}</textarea>
+
+        <div id="second-doc" class="mt-5">
+          <label class="block text-sm font-medium text-slate-700" for="input_b">Dokument B pro porovnání</label>
+          <div class="mt-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4">
+            <label class="block text-sm font-medium text-slate-700" for="file_b">Nahrát dokument B z počítače</label>
+            <input id="file_b" name="file_b" type="file" accept=".txt,.md,.markdown,.csv,.rst,.log,text/plain,text/markdown,text/csv" class="mt-2 block w-full cursor-pointer rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-100">
+          </div>
+          <textarea id="input_b" name="input_b" rows="8" class="mt-2 w-full resize-y rounded-md border border-slate-300 px-3 py-3 text-sm leading-6 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Vložte druhou verzi dokumentu...">{{.InputB}}</textarea>
+        </div>
+
+        <label class="mt-5 block text-sm font-medium text-slate-700" for="action">Workflow nebo uložený prompt</label>
+        <select id="action" name="action" class="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100">
+          <optgroup label="Workflow">
+            {{range .Actions}}<option value="{{.ID}}" data-second="{{.NeedsSecond}}" {{if eq $.SelectedAction .ID}}selected{{end}}>{{.Label}}</option>{{end}}
+          </optgroup>
+          <optgroup label="Prompt knihovna">
+            {{range .Prompts}}<option value="{{.ID}}" data-second="{{.NeedsSecond}}" {{if eq $.SelectedAction .ID}}selected{{end}}>{{.Label}} · {{.Version}}</option>{{end}}
+          </optgroup>
+        </select>
+
+        <button type="submit" class="mt-6 w-full rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-200">Spustit analýzu</button>
+      </form>
+
+      <div class="space-y-5">
+        {{template "notice" .}}
+        {{if .Result}}
+          <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Výsledek</p>
+            <h2 class="mt-2 text-2xl font-semibold text-slate-950">{{.Result.Title}}</h2>
+            <p class="mt-3 leading-7 text-slate-600">{{.Result.Summary}}</p>
+          </section>
+          <div class="grid gap-4">
+            {{range .Result.Sections}}
+              <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                <h3 class="text-base font-semibold text-slate-950">{{.Title}}</h3>
+                <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                  {{range .Items}}<li class="flex gap-2"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600"></span><span>{{.}}</span></li>{{end}}
+                </ul>
+              </article>
+            {{end}}
+          </div>
+          {{if .Result.Warnings}}
+            <section class="rounded-lg border border-amber-200 bg-amber-50 p-5">
+              <h3 class="text-base font-semibold text-amber-950">Upozornění</h3>
+              <ul class="mt-3 space-y-2 text-sm leading-6 text-amber-900">
+                {{range .Result.Warnings}}<li>{{.}}</li>{{end}}
+              </ul>
+            </section>
+          {{end}}
+          {{if .Result.Raw}}
+            <details class="rounded-lg border border-slate-200 bg-white p-5 text-sm text-slate-600">
+              <summary class="cursor-pointer font-medium text-slate-900">Raw fallback</summary>
+              <pre class="mt-3 whitespace-pre-wrap rounded-md bg-slate-950 p-4 text-xs leading-6 text-slate-100">{{.Result.Raw}}</pre>
+            </details>
+          {{end}}
+        {{else}}
+          <section class="rounded-lg border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <h2 class="text-xl font-semibold text-slate-950">Výstup se zobrazí tady</h2>
+            <p class="mt-3 text-sm leading-6 text-slate-500">Karty výsledků ukážou shrnutí, rizika, otázky, návrhy změn nebo výstup z Filipovy prompt knihovny.</p>
+          </section>
+        {{end}}
+      </div>
+    </section>
+  </main>
+  {{template "footer" .}}
+  <script src="/static/app.js"></script>
+</body>
+</html>
+{{end}}

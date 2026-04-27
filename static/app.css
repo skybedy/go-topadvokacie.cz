@@ -1,0 +1,67 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-feature-settings: "liga" 1, "kern" 1;
+}
+
+.text-xs {
+  font-size: 0.95rem !important;
+  line-height: 1.45rem !important;
+}
+
+.text-sm {
+  font-size: 1.08rem !important;
+  line-height: 1.7rem !important;
+}
+
+.text-base {
+  font-size: 1.18rem !important;
+  line-height: 1.85rem !important;
+}
+
+.text-lg {
+  font-size: 1.35rem !important;
+  line-height: 2.1rem !important;
+}
+
+.text-xl {
+  font-size: 1.58rem !important;
+  line-height: 2.25rem !important;
+}
+
+.text-2xl {
+  font-size: 1.92rem !important;
+  line-height: 2.45rem !important;
+}
+
+.text-4xl {
+  font-size: 3rem !important;
+  line-height: 1.12 !important;
+}
+
+@media (min-width: 640px) {
+  .sm\:text-5xl {
+    font-size: 3.75rem !important;
+    line-height: 1.08 !important;
+  }
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: 1.08rem !important;
+  line-height: 1.7rem !important;
+}
+
+pre {
+  font-size: 1rem !important;
+  line-height: 1.65rem !important;
+}
+
+textarea,
+pre {
+  tab-size: 2;
+}

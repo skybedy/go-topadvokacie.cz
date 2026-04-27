@@ -1,0 +1,42 @@
+{{define "nav"}}
+<header class="border-b border-slate-200 bg-white/95 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+    <a href="/" class="flex items-center gap-3">
+      <span class="grid h-10 w-10 place-items-center rounded-lg bg-blue-700 text-sm font-bold text-white shadow-sm">LP</span>
+      <span>
+        <span class="block text-base font-semibold text-slate-950">LexPilot Demo</span>
+        <span class="block text-xs text-slate-500">AI pracovní stůl pro Filipa</span>
+      </span>
+    </a>
+    <nav class="flex flex-wrap items-center gap-1 text-sm font-medium text-slate-600">
+      <a class="{{if eq .Active "home"}}bg-slate-100 text-slate-950{{end}} rounded-md px-3 py-2 hover:bg-slate-100" href="/">Pracovní stůl</a>
+      <a class="{{if eq .Active "prompts"}}bg-slate-100 text-slate-950{{end}} rounded-md px-3 py-2 hover:bg-slate-100" href="/prompts">Prompty</a>
+      <a class="{{if eq .Active "examples"}}bg-slate-100 text-slate-950{{end}} rounded-md px-3 py-2 hover:bg-slate-100" href="/examples">Ukázky</a>
+      <a class="{{if eq .Active "about"}}bg-slate-100 text-slate-950{{end}} rounded-md px-3 py-2 hover:bg-slate-100" href="/about">O projektu</a>
+    </nav>
+  </div>
+</header>
+{{end}}
+
+{{define "notice"}}
+<div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+  Demo nástroj. Výstupy AI slouží pouze jako pracovní podklad pro právníka a nenahrazují odborné právní posouzení.
+</div>
+{{end}}
+
+{{define "footer"}}
+<footer class="mt-16 border-t border-slate-200 bg-white">
+  <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-8 text-sm text-slate-500 sm:px-6 lg:px-8">
+    <p>© {{.CurrentYear}} LexPilot Demo. Lokální MVP pro ukázku právnických AI workflow.</p>
+    <p>Demo nástroj. Výstupy AI slouží pouze jako pracovní podklad pro právníka a nenahrazují odborné právní posouzení.</p>
+  </div>
+</footer>
+{{end}}
+
+{{define "head"}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}} | LexPilot Demo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/static/app.css">
+{{end}}

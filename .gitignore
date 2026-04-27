@@ -1,0 +1,6 @@
+.env
+.codex
+
+/lexpilot
+*.log
+tmp/

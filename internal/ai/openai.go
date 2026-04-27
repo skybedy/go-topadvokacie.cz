@@ -1,0 +1,172 @@
+package ai
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
+	"time"
+
+	"lexdemo/internal/model"
+)
+
+type OpenAIClient struct {
+	apiKey string
+	model  string
+	http   *http.Client
+}
+
+func NewOpenAIClient(apiKey, modelName string) *OpenAIClient {
+	return NewOpenAIClientWithTimeout(apiKey, modelName, 180*time.Second)
+}
+
+func NewOpenAIClientWithTimeout(apiKey, modelName string, timeout time.Duration) *OpenAIClient {
+	if modelName == "" {
+		modelName = "gpt-4o-mini"
+	}
+	if timeout <= 0 {
+		timeout = 180 * time.Second
+	}
+	return &OpenAIClient{
+		apiKey: apiKey,
+		model:  modelName,
+		http:   &http.Client{Timeout: timeout},
+	}
+}
+
+func (c *OpenAIClient) Analyze(ctx context.Context, action string, inputA string, inputB string) (model.Result, error) {
+	if strings.TrimSpace(c.apiKey) == "" {
+		return model.Result{}, errors.New("missing OpenAI API key")
+	}
+
+	payload := chatRequest{
+		Model: c.model,
+		Messages: []chatMessage{
+			{Role: "system", Content: SystemPrompt},
+			{Role: "user", Content: buildPrompt(action, inputA, inputB)},
+		},
+		ResponseFormat: map[string]string{"type": "json_object"},
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return model.Result{}, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://api.openai.com/v1/chat/completions", bytes.NewReader(body))
+	if err != nil {
+		return model.Result{}, err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.apiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return model.Result{}, err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(io.LimitReader(resp.Body, 2<<20))
+	if err != nil {
+		return model.Result{}, err
+	}
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return model.Result{}, fmt.Errorf("openai status %d: %s", resp.StatusCode, sanitizeOpenAIError(respBody))
+	}
+
+	var chat chatResponse
+	if err := json.Unmarshal(respBody, &chat); err != nil {
+		return model.Result{}, err
+	}
+	if len(chat.Choices) == 0 {
+		return model.Result{}, errors.New("openai returned no choices")
+	}
+
+	content := chat.Choices[0].Message.Content
+	var result model.Result
+	if err := json.Unmarshal([]byte(content), &result); err != nil {
+		return model.Result{
+			Title:   ActionByID(action).Label,
+			Summary: "AI vrátila odpověď mimo očekávaný JSON formát. Níže je surový výstup.",
+			Raw:     content,
+			Warnings: []string{
+				"Výstup je pracovní podklad pro právníka, nikoli právní stanovisko.",
+			},
+		}, nil
+	}
+	if result.Title == "" {
+		result.Title = ActionByID(action).Label
+	}
+	if len(result.Warnings) == 0 {
+		result.Warnings = []string{"Výstup je pracovní podklad pro právníka, nikoli právní stanovisko."}
+	}
+	return result, nil
+}
+
+func sanitizeOpenAIError(body []byte) string {
+	var parsed struct {
+		Error struct {
+			Message string `json:"message"`
+			Type    string `json:"type"`
+			Code    string `json:"code"`
+		} `json:"error"`
+	}
+	if err := json.Unmarshal(body, &parsed); err == nil && parsed.Error.Message != "" {
+		parts := []string{parsed.Error.Message}
+		if parsed.Error.Type != "" {
+			parts = append(parts, "type="+parsed.Error.Type)
+		}
+		if parsed.Error.Code != "" {
+			parts = append(parts, "code="+parsed.Error.Code)
+		}
+		return strings.Join(parts, " | ")
+	}
+	text := strings.TrimSpace(string(body))
+	if len(text) > 500 {
+		text = text[:500] + "..."
+	}
+	return text
+}
+
+func buildPrompt(action string, inputA string, inputB string) string {
+	selected := ActionByID(action)
+	var b strings.Builder
+	fmt.Fprintf(&b, "Akce: %s\n", selected.Label)
+	if prompt, ok := PromptTemplateByID(action); ok {
+		fmt.Fprintf(&b, "Prompt knihovna: %s %s\n", prompt.Label, prompt.Version)
+		fmt.Fprintf(&b, "Kategorie: %s\n", prompt.Category)
+		fmt.Fprintf(&b, "Instrukce promptu: %s\n", prompt.Instruction)
+	}
+	b.WriteString("\n")
+	b.WriteString("Vrať výhradně validní JSON ve tvaru:\n")
+	b.WriteString(`{"title":"...","summary":"...","sections":[{"title":"...","items":["..."]}],"warnings":["..."],"raw":""}`)
+	b.WriteString("\n\nPracuj pouze s informacemi ze vstupu. Když něco chybí, napiš to jako nejasnost nebo otázku.\n\n")
+	b.WriteString("Dokument A:\n")
+	b.WriteString(inputA)
+	if selected.NeedsSecond || strings.TrimSpace(inputB) != "" {
+		b.WriteString("\n\nDokument B:\n")
+		b.WriteString(inputB)
+	}
+	return b.String()
+}
+
+type chatRequest struct {
+	Model          string            `json:"model"`
+	Messages       []chatMessage     `json:"messages"`
+	ResponseFormat map[string]string `json:"response_format,omitempty"`
+}
+
+type chatMessage struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+type chatResponse struct {
+	Choices []struct {
+		Message chatMessage `json:"message"`
+	} `json:"choices"`
+}

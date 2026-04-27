@@ -1,0 +1,133 @@
+package ai
+
+import (
+	"context"
+	"strings"
+
+	"lexdemo/internal/model"
+)
+
+type MockAIClient struct{}
+
+func NewMockAIClient() *MockAIClient {
+	return &MockAIClient{}
+}
+
+func (c *MockAIClient) Analyze(ctx context.Context, action string, inputA string, inputB string) (model.Result, error) {
+	select {
+	case <-ctx.Done():
+		return model.Result{}, ctx.Err()
+	default:
+	}
+
+	switch action {
+	case "prompt-contract-review":
+		return result("Prompt knihovna: Kontrola smlouvy", "Tento prompt simuluje Filipovu uloženou šablonu pro rychlou kontrolu smlouvy. Výstup odděluje fakta z dokumentu od bodů k ověření.", []model.Section{
+			{"Co prompt kontroluje", []string{"Určitost předmětu plnění a identifikaci stran.", "Lhůty, cenu, odpovědnost, sankce a ukončení.", "Chybějící přílohy, definice a proces předání."}},
+			{"Ukázkový výstup", []string{"Doporučuji ověřit, zda dokument obsahuje přesný akceptační proces.", "Pokud odpovědnost není limitovaná, jde o bod k obchodnímu rozhodnutí.", "Sankce je vhodné navázat na konkrétní porušení."}},
+		}), nil
+	case "prompt-plain-client":
+		return result("Prompt knihovna: Srozumitelně pro klienta", "Prompt převede právní text do krátkého klientského vysvětlení bez zbytečného právnického stylu.", []model.Section{
+			{"Klientské vysvětlení", []string{"Text říká, kdo má co dodat, kdy a co se stane při porušení.", "Nejdůležitější je pohlídat si sankce, ukončení a praktické důsledky pro běžný provoz."}},
+			{"Poznámka pro právníka", []string{"Před odesláním klientovi zkontrolujte, zda zjednodušení nezměnilo právní význam."}},
+		}), nil
+	case "prompt-email-draft":
+		return result("Prompt knihovna: Návrh e-mailu bez odeslání", "Prompt připraví pouze pracovní návrh e-mailu. Nic se automaticky neodesílá.", []model.Section{
+			{"Draft e-mailu", []string{"Dobrý den, zasílám několik bodů k doplnění smlouvy. Prosím zejména o potvrzení lhůt, odpovědnosti a sankcí.", "Po doplnění podkladů připravím upravené znění."}},
+			{"Ověřit před použitím", []string{"Adresáta, tón komunikace, obchodní kontext a případné citlivé informace."}},
+		}), nil
+	case "prompt-counterparty":
+		return result("Prompt knihovna: Protiargumentace protistrany", "Prompt pomáhá připravit se na vyjednávání tím, že předvídá realistické námitky druhé strany.", []model.Section{
+			{"Možné námitky", []string{"Limit odpovědnosti je pro protistranu příliš nízký.", "Smluvní pokuta může být vnímána jako nepřiměřená.", "Výpovědní doba nemusí odpovídat investici do spolupráce."}},
+			{"Možné reakce", []string{"Navrhnout odstupňování podle závažnosti porušení.", "Spojit vyšší odpovědnost s konkrétními typy škody.", "Doplnit přechodné období při ukončení."}},
+		}), nil
+	case "prompt-signing-checklist":
+		return result("Prompt knihovna: Checklist před podpisem", "Prompt vytvoří praktický seznam věcí, které má právník nebo klient projít před podpisem.", []model.Section{
+			{"Právní", []string{"Jsou správně označeny smluvní strany?", "Je jasné, kdy lze odstoupit nebo vypovědět smlouvu?", "Je vyřešen vztah smluvní pokuty a náhrady škody?"}},
+			{"Obchodní", []string{"Odpovídají platby a lhůty domluvenému dealu?", "Je klient schopen povinnosti reálně splnit?"}},
+			{"Důkazní", []string{"Je jasné, jak se bude prokazovat předání, vady a komunikace?"}},
+		}), nil
+	case "prompt-terms-review":
+		return result("Prompt knihovna: Revize obchodních podmínek", "Prompt prochází obchodní podmínky pohledem typických B2B/B2C rizik.", []model.Section{
+			{"Kontrolní body", []string{"Identifikace poskytovatele, objednávkový proces a platební podmínky.", "Reklamace, odpovědnost, odstoupení a jednostranné změny podmínek.", "Spotřebitelská ustanovení, pokud jde o B2C vztah."}},
+			{"Typická rizika", []string{"Nejasné změny podmínek bez oznámení.", "Chybějící reklamační proces.", "Příliš široké omezení odpovědnosti."}},
+		}), nil
+	case "prompt-obligations-deadlines":
+		return result("Prompt knihovna: Extrakce povinností a lhůt", "Prompt vytáhne z dokumentu praktickou tabulku kdo má co udělat, do kdy a co hrozí při nesplnění.", []model.Section{
+			{"Povinnosti", []string{"Dodavatel: dodat plnění podle smlouvy do sjednaného termínu.", "Objednatel: zaplatit cenu ve lhůtě splatnosti.", "Obě strany: zachovat mlčenlivost, pokud je sjednána."}},
+			{"Lhůty a následky", []string{"Prodlení s dodáním může spustit smluvní pokutu.", "Prodlení s platbou může vést k úroku, výpovědi nebo pozastavení plnění."}},
+		}), nil
+	case "client-summary":
+		return result("Shrnutí pro klienta", "Dokument upravuje základní obchodní vztah mezi stranami. Klient by měl věnovat pozornost rozsahu povinností, lhůtám, sankcím a možnostem ukončení.", []model.Section{
+			{"Jednoduše řečeno", []string{"Text zakládá povinnosti obou stran a počítá se sankcí při porušení.", "Před podpisem je vhodné ověřit, zda jsou lhůty, cena a odpovědnost nastavené obchodně přijatelně."}},
+			{"Co si pohlídat", []string{"Zda je jasně popsáno plnění.", "Zda sankce odpovídají významu povinností.", "Zda má klient praktickou možnost smlouvu ukončit."}},
+		}), nil
+	case "risk-points":
+		return result("Rizikové body", "Demo identifikovalo několik typických rizik, která by komerční právník pravděpodobně prověřil před podpisem.", []model.Section{
+			{"High", []string{"Neomezená odpovědnost: pokud text nestanoví limit, může být ekonomické riziko nepřiměřené. Návrh: doplnit cap odpovědnosti.", "Jednostranná změna podmínek: pokud ji má jen jedna strana, doporučuji doplnit oznámení a právo odstoupit."}},
+			{"Medium", []string{"Nejasná lhůta plnění: může vést ke sporu o prodlení. Návrh: doplnit konkrétní datum nebo mechanismus výpočtu.", "Smluvní pokuta bez vazby na závažnost porušení: zvážit odstupňování."}},
+			{"Low", []string{"Terminologická nejednotnost: sjednotit označení smluvních stran a dokumentů."}},
+		}), nil
+	case "change-proposal":
+		return result("Návrh změn", "Doporučené úpravy míří hlavně na přesnost, vyváženost a snížení budoucí spornosti.", []model.Section{
+			{"Priorita 1", []string{"Doplnit přesný předmět plnění a akceptační proces. Návrh: Plnění se považuje za předané až písemným potvrzením objednatele.", "Omezit odpovědnost přiměřeným limitem, například na výši uhrazené odměny za posledních 12 měsíců."}},
+			{"Priorita 2", []string{"Zpřesnit výpovědní dobu a následky ukončení.", "Doplnit postup při změnových požadavcích a vícenákladech."}},
+		}), nil
+	case "client-questions":
+		return result("Otázky na klienta", "Tyto otázky pomohou doplnit skutkový a obchodní kontext před úpravou dokumentu.", []model.Section{
+			{"Skutkové", []string{"Kdo bude za klienta přebírat plnění?", "Existují přílohy nebo technická specifikace, na které text odkazuje?"}},
+			{"Obchodní", []string{"Jaká je maximální přijatelná výše smluvní pokuty?", "Je pro klienta důležitější rychlé ukončení, nebo stabilita vztahu?"}},
+			{"Právní", []string{"Má být odpovědnost limitována?", "Má smlouva řešit mlčenlivost i po skončení vztahu?"}},
+			{"Důkazní", []string{"Jak se bude prokazovat předání, vady a reklamace?", "Kde budou ukládány objednávky a akceptace?"}},
+		}), nil
+	case "consistency-check":
+		return result("Kontrola konzistence", "Text působí jako dokument, u kterého je vhodné ověřit návaznost definic, lhůt a sankcí.", []model.Section{
+			{"Rozpory", []string{"Zkontrolujte, zda se stejná strana neoznačuje různými názvy.", "Ověřte, zda výpovědní doba odpovídá ustanovením o ukončení."}},
+			{"Chybějící části", []string{"Může chybět proces předání plnění.", "U smluvní pokuty často chybí vztah k náhradě škody."}},
+			{"Duplicity", []string{"Prověřte, zda se povinnost mlčenlivosti neopakuje s rozdílným rozsahem."}},
+		}), nil
+	case "plain-language":
+		return result("Srozumitelná verze", "Níže je pracovní převod právního textu do jednodušší řeči. Význam by měl zůstat zachovaný, ale formulace nejsou určeny k podpisu.", []model.Section{
+			{"Vysvětlení pro klienta", []string{"Druhá strana musí dodat dohodnuté plnění včas a podle sjednaných parametrů.", "Pokud některá strana poruší důležité povinnosti, může jí vzniknout povinnost zaplatit sankci.", "Smlouvu lze ukončit jen způsoby, které jsou v dokumentu popsané."}},
+		}), nil
+	case "compare-versions":
+		return result("Porovnání dvou verzí", "Druhá verze podle demo výstupu mění zejména rozložení rizika a zpřesňuje některé procesní kroky.", []model.Section{
+			{"Věcné změny", []string{"Zkontrolujte, zda druhá verze nemění rozsah odpovědnosti nebo sankcí.", "Ověřte dopady nových lhůt na provoz klienta."}},
+			{"Stylistické změny", []string{"Některé formulace mohou být kratší, ale právně méně přesné.", "Sjednoťte terminologii mezi oběma verzemi."}},
+			{"Rizikové změny", []string{"Pozor na vypuštění limitu odpovědnosti nebo práva odstoupit.", "Pozor na nenápadné rozšíření mlčenlivosti či zákazu konkurence."}},
+		}), nil
+	default:
+		return result("Analýza smlouvy", "Dokument je potřeba číst jako pracovní podklad. Demo výstup zvýrazňuje hlavní části, které by právník typicky kontroloval.", []model.Section{
+			{"Shrnutí", []string{"Text upravuje obchodní vztah a stanoví základní povinnosti stran.", "Pro další práci je vhodné ověřit ekonomické parametry a praktickou vymahatelnost."}},
+			{"Smluvní strany", []string{"Identifikace stran by měla obsahovat název, IČO, sídlo a oprávněné osoby.", "Zkontrolujte, zda jsou strany označeny konzistentně v celém dokumentu."}},
+			{"Předmět smlouvy", []string{"Předmět musí být dostatečně určitý.", "Pokud dokument odkazuje na přílohy, měly by být přiložené a verzované."}},
+			{"Lhůty", []string{"Lhůty je vhodné navázat na konkrétní události.", "Pozor na neurčité výrazy typu bez zbytečného odkladu bez dalšího kontextu."}},
+			{"Platby", []string{"Ověřte cenu, splatnost, DPH, fakturaci a následky prodlení."}},
+			{"Povinnosti", []string{"Povinnosti by měly být měřitelné a přiřazené konkrétní straně."}},
+			{"Sankce", []string{"Sankce by měly odpovídat závažnosti porušení.", "Prověřte vztah smluvní pokuty a náhrady škody."}},
+			{"Ukončení", []string{"Zkontrolujte výpověď, odstoupení, následky ukončení a vypořádání."}},
+			{"Nejasnosti", []string{"Neurčité pojmy je vhodné definovat nebo nahradit přesnější formulací."}},
+			{"Doporučení", []string{"Doplnit chybějící definice, limity odpovědnosti a jasný akceptační postup."}},
+		}), nil
+	}
+}
+
+func result(title, summary string, sections []model.Section) model.Result {
+	return model.Result{
+		Title:    title,
+		Summary:  summary,
+		Sections: sections,
+		Warnings: []string{
+			"Demo režim používá předpřipravené odpovědi a nehodnotí plný právní kontext.",
+			"Výstup je pracovní podklad pro právníka, nikoli právní stanovisko.",
+		},
+		Raw: rawPreview(summary),
+	}
+}
+
+func rawPreview(s string) string {
+	if strings.TrimSpace(s) == "" {
+		return ""
+	}
+	return "Mock fallback: " + s
+}
