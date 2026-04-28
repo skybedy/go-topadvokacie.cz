@@ -3,7 +3,11 @@ const secondDoc = document.querySelector("#second-doc");
 const exampleSelect = document.querySelector("#example");
 const analysisForm = document.querySelector("form");
 const analysisLoading = document.querySelector("#analysis-loading");
+const analysisPlaceholder = document.querySelector("#analysis-placeholder");
+const analysisIdle = document.querySelector("[data-analysis-idle]");
 const submitButton = document.querySelector('button[type="submit"]');
+const submitLabel = document.querySelector("[data-submit-label]");
+const analysisButtonSpinner = document.querySelector("[data-analysis-button-spinner]");
 let activeUploads = 0;
 
 function syncSecondDoc() {
@@ -111,15 +115,34 @@ document.querySelectorAll("[data-upload-input]").forEach((input) => {
 });
 
 if (analysisForm && analysisLoading) {
-  analysisForm.addEventListener("submit", () => {
-    if (activeUploads > 0) return;
+  analysisForm.addEventListener("submit", (event) => {
+    if (analysisForm.dataset.submitting === "true") return;
+
+    if (activeUploads > 0) {
+      event.preventDefault();
+      return;
+    }
+
+    if (!analysisForm.checkValidity()) return;
+
+    event.preventDefault();
+    analysisIdle?.classList.add("hidden");
     analysisLoading.classList.remove("hidden");
-    analysisLoading.scrollIntoView({ behavior: "smooth", block: "center" });
+    analysisPlaceholder?.classList.remove("border-slate-200", "bg-white");
+    analysisPlaceholder?.classList.add("border-blue-200", "bg-blue-50");
+    analysisButtonSpinner?.classList.remove("hidden");
     if (submitButton) {
       submitButton.disabled = true;
-      submitButton.innerText = "Čekám na odpověď modelu...";
       submitButton.classList.add("opacity-60", "cursor-wait");
     }
+    if (submitLabel) {
+      submitLabel.innerText = "Čekám na odpověď modelu...";
+    }
+    analysisLoading.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => {
+      analysisForm.dataset.submitting = "true";
+      analysisForm.requestSubmit();
+    }, 120);
   });
 }
 

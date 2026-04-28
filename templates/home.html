@@ -108,7 +108,10 @@
           </div>
         </div>
 
-        <button type="submit" class="mt-6 w-full rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-200">Spustit analýzu</button>
+        <button type="submit" class="mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-200">
+          <span class="loading-spinner hidden" data-analysis-button-spinner aria-hidden="true"></span>
+          <span data-submit-label>Spustit analýzu</span>
+        </button>
       </form>
 
       <div class="space-y-5">
@@ -157,25 +160,31 @@
             </details>
           {{end}}
         {{else}}
-          <section id="analysis-loading" class="hidden rounded-lg border border-blue-200 bg-blue-50 p-8 text-center shadow-sm" aria-live="polite">
-            <div class="mx-auto flex max-w-xl flex-col items-center gap-4">
-              <span class="loading-spinner loading-spinner-lg text-blue-700" aria-hidden="true"></span>
-              <div>
-                <h2 class="text-xl font-semibold text-blue-950">Čekám na odpověď modelu</h2>
-                <p class="mt-3 text-sm leading-6 text-blue-800">FilipAiPilot posílá viditelný text do zvoleného právního promptu. U delších PDF nebo DOCX to může chvíli trvat.</p>
+          <section id="analysis-placeholder" class="rounded-lg border border-slate-200 bg-white p-8 text-center shadow-sm" aria-live="polite">
+            <div data-analysis-idle>
+              <h2 class="text-xl font-semibold text-slate-950">Výstup se zobrazí tady</h2>
+              <p class="mt-3 text-sm leading-6 text-slate-500">Karty výsledků ukážou shrnutí, rizika, otázky, návrhy změn nebo výstup z Filipovy prompt knihovny.</p>
+            </div>
+            <div id="analysis-loading" class="hidden">
+              <div class="mx-auto flex max-w-xl flex-col items-center gap-5">
+                <div class="relative mx-auto h-16 w-16" aria-hidden="true">
+                  <div class="absolute inset-0 rounded-full border-4 border-blue-200 border-t-blue-700 animate-spin"></div>
+                  <div class="absolute inset-[0.55rem] rounded-full border-4 border-sky-200 border-b-sky-500 animate-spin" style="animation-direction: reverse; animation-duration: 1.4s;"></div>
+                  <div class="absolute inset-[1.55rem] rounded-full bg-blue-600/90 shadow-[0_0_0_10px_rgba(59,130,246,0.10)]"></div>
+                </div>
+                <div>
+                  <h2 class="text-xl font-semibold text-blue-950">Načítám výstup z modelu</h2>
+                  <p class="mt-3 text-sm leading-6 text-blue-800">FilipAiPilot posílá text do zvoleného právního promptu. Výsledek z modelu se tady zobrazí hned po dokončení.</p>
+                </div>
               </div>
             </div>
-          </section>
-          <section class="rounded-lg border border-slate-200 bg-white p-8 text-center shadow-sm">
-            <h2 class="text-xl font-semibold text-slate-950">Výstup se zobrazí tady</h2>
-            <p class="mt-3 text-sm leading-6 text-slate-500">Karty výsledků ukážou shrnutí, rizika, otázky, návrhy změn nebo výstup z Filipovy prompt knihovny.</p>
           </section>
         {{end}}
       </div>
     </section>
   </main>
   {{template "footer" .}}
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=20260428-1"></script>
 </body>
 </html>
 {{end}}

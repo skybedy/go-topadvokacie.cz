@@ -17,6 +17,7 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 - Hlavni formular podporuje perspektivu vystupu: pro pravnika, pro klienta, pro vyjednavani.
 - Vystupni sekce maji tlacitko pro kopirovani textu do schranky.
 - UI zobrazuje preloader pri nacitani uploadovaneho souboru i pri cekani na odpoved modelu.
+- Cekaci stav analyzy se renderuje primo v karte "Vystup se zobrazi tady", aby uzivatel videl spinner ve stejnem miste, kde se po dokonceni ukaze vysledek.
 - Homepage obsahuje kratky demo scenar pro Filipa s rychlymi odkazy na vhodne ulozene prompty.
 - Upload souboru probiha pred analyzou pres endpoint `/upload-text`; vytazeny text se vlozi do viditelneho textarea pole a az potom uzivatel spousti analyzu.
 - `.env.example` nastavuje `OPENAI_MODEL=gpt-5-nano` a `OPENAI_TIMEOUT_SECONDS=180`.
@@ -53,8 +54,8 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 - `internal/web/server.go` - HTTP routing, handlery, upload/parser souboru, renderovani sablon a chybove hlasky.
 - `internal/web/examples.go` - fiktivni ukazkove pravni texty.
 - `templates/` - HTML sablony pro pracovni stul, prompty, ukazky a info stranku.
-- `static/app.js` - prepinani druheho dokumentu, vyber ukazky, nacitani souboru do textarea a kopirovani vystupnich sekci.
-- `static/app.css` - drobne CSS upravy, hlavne vetsi pismo kvuli citelnosti.
+- `static/app.js` - prepinani druheho dokumentu, vyber ukazky, nacitani souboru do textarea, loading stav analyzy a kopirovani vystupnich sekci.
+- `static/app.css` - drobne CSS upravy, hlavne vetsi pismo kvuli citelnosti a animace spinneru.
 - `examples/` - fiktivni textove priklady.
 - `README.md` - zakladni dokumentace projektu.
 - `deploy.sh` - jednoduchy deploy script pro Ubuntu VPS: git pull, testy, build a restart systemd sluzby.
@@ -126,6 +127,7 @@ Pak otevrit `http://localhost:8080`.
 - Neni zde anonymizace citlivych udaju.
 - OpenAI klient pouziva Chat Completions API a ocekava JSON objekt ve strukture `model.Result`.
 - UI je demo dashboard, ne produkcni pravni aplikace.
+- Pri zmene statickych assetu je vhodne menit query string u `app.js` a `app.css`, aby se v prohlizeci neudrzela stara cache a nebil se novy loading UI se starymi styly.
 
 ## Poznamky pro dalsi navazani
 

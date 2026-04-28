@@ -94,6 +94,12 @@ UI zobrazuje spinner pri nacitani souboru do textoveho pole a samostatny loading
 
 Duvod: PDF/DOCX parsing i OpenAI odpoved mohou trvat nekolik sekund. Filip musi videt, ze aplikace pracuje a ne zasekla se.
 
+### Cekani na analyzu se ma odehravat primo v miste budouciho vysledku
+
+Loading stav analyzy se renderuje primo v karte "Vystup se zobrazi tady". Pri odeslani formulare se skryje idle obsah karty a na stejnem miste se ukaze spinner a text o nacitani.
+
+Duvod: kdyz se cekaci stav objevi jinde nebo jen jako drobna zmena textu, uzivatel snadno ziska dojem, ze se nic nedeje. Stejna karta pro cekani i vysledek pusobi citelneji a produktove jisteji.
+
 ### Deploy script zustava jednoduchy a nedestruktivni
 
 Projekt ma `deploy.sh`, ktery provede `git pull`, `go test ./...`, `go build -o filipaipilot ./cmd/filipaipilot` a restartuje systemd sluzbu `filipaipilot`, pokud existuje.
