@@ -3,7 +3,7 @@ package ai
 import (
 	"context"
 
-	"lexdemo/internal/model"
+	"filipaipilot/internal/model"
 )
 
 const SystemPrompt = "Jsi AI asistent pro českého komerčního právníka. Nejsi advokát. Pomáháš analyzovat dokumenty, strukturovat informace, upozorňovat na rizika a navrhovat otázky. Odpovídej česky, strukturovaně a opatrně. Nepřidávej fakta, která nejsou ve vstupu."

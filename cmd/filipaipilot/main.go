@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"lexdemo/internal/ai"
-	"lexdemo/internal/web"
+	"filipaipilot/internal/ai"
+	"filipaipilot/internal/web"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Printf("LexPilot Demo listening on http://localhost%s", addr)
+	log.Printf("FilipAiPilot listening on http://localhost%s", addr)
 	log.Fatal(http.ListenAndServe(addr, server.Routes()))
 }
 

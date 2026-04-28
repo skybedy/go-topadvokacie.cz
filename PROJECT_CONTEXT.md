@@ -2,7 +2,7 @@
 
 ## Strucny popis projektu
 
-LexPilot Demo je lokalni Go MVP pro komercniho pravnika Filipa. Cilem je ukazat rozdil mezi rucnim pouzivanim ChatGPT a strukturovanym pravnickym workflow nastrojem nad smlouvami a pravnimi texty.
+FilipAiPilot je lokalni Go MVP pro komercniho pravnika Filipa. Cilem je ukazat rozdil mezi rucnim pouzivanim ChatGPT a strukturovanym pravnickym workflow nastrojem nad smlouvami a pravnimi texty.
 
 Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy: pravnik vlozi dokument, vybere ulozeny pravni prompt a dostane strukturovany vystup jako pracovni podklad.
 
@@ -19,7 +19,7 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 - Homepage obsahuje kratky demo scenar pro Filipa s rychlymi odkazy na vhodne ulozene prompty.
 - Upload souboru probiha pred analyzou pres endpoint `/upload-text`; vytazeny text se vlozi do viditelneho textarea pole a az potom uzivatel spousti analyzu.
 - `.env.example` nastavuje `OPENAI_MODEL=gpt-5-nano` a `OPENAI_TIMEOUT_SECONDS=180`.
-- Go modul se jmenuje `lexdemo`.
+- Go modul se jmenuje `filipaipilot`.
 - Projekt ma zakladni testy pro upload/parser v `internal/web/server_test.go`.
 - Adresar je git repozitar na vetvi `main`.
 
@@ -44,7 +44,7 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 
 ## Hlavni adresare a soubory
 
-- `cmd/lexpilot/main.go` - vstupni bod aplikace, nacitani `.env`, volba mock/OpenAI klienta, spusteni serveru.
+- `cmd/filipaipilot/main.go` - vstupni bod aplikace, nacitani `.env`, volba mock/OpenAI klienta, spusteni serveru.
 - `internal/ai/client.go` - AI interface, system prompt, prompt knihovna a volby vystupu.
 - `internal/ai/mock.go` - mock AI klient s pripravenymi vystupy pro lokalni demo bez API klice.
 - `internal/ai/openai.go` - OpenAI klient pres `net/http`, JSON response format a fallback pri nevalidnim JSON vystupu.
@@ -62,7 +62,7 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 ## Jak projekt spustit
 
 ```bash
-go run ./cmd/lexpilot
+go run ./cmd/filipaipilot
 ```
 
 Vychozi URL:
@@ -97,16 +97,16 @@ go test ./...
 Aktualni stav k 2026-04-27:
 
 ```text
-?   	lexdemo/cmd/lexpilot	[no test files]
-?   	lexdemo/internal/ai	[no test files]
-?   	lexdemo/internal/model	[no test files]
-?   	lexdemo/internal/web	[no test files]
+?   	filipaipilot/cmd/filipaipilot	[no test files]
+?   	filipaipilot/internal/ai	[no test files]
+?   	filipaipilot/internal/model	[no test files]
+?   	filipaipilot/internal/web	[no test files]
 ```
 
 Pro rychlou kontrolu spusteni:
 
 ```bash
-go run ./cmd/lexpilot
+go run ./cmd/filipaipilot
 ```
 
 Pak otevrit `http://localhost:8080`.

@@ -17,8 +17,8 @@ import (
 	"strings"
 	"time"
 
-	"lexdemo/internal/ai"
-	"lexdemo/internal/model"
+	"filipaipilot/internal/ai"
+	"filipaipilot/internal/model"
 )
 
 type Server struct {
@@ -69,7 +69,7 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := s.baseData("LexPilot Demo", "home")
+	data := s.baseData("FilipAiPilot", "home")
 	if r.Method == http.MethodGet {
 		if example, ok := ExampleByID(r.URL.Query().Get("example")); ok {
 			data.SelectedExample = example.ID
@@ -301,7 +301,7 @@ func extractPDFText(content []byte) (string, error) {
 		return "", fmt.Errorf("PDF parser není v systému dostupný. Nainstalujte balíček poppler-utils nebo nahrajte textový soubor.")
 	}
 
-	tmp, err := os.CreateTemp("", "lexpilot-*.pdf")
+	tmp, err := os.CreateTemp("", "filipaipilot-*.pdf")
 	if err != nil {
 		return "", fmt.Errorf("PDF se nepodařilo připravit ke čtení.")
 	}

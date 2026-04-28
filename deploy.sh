@@ -8,11 +8,11 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-BINARY_NAME="lexpilot"
-SERVICE_NAME="lexpilot"
-BUILD_TARGET="./cmd/lexpilot"
+BINARY_NAME="filipaipilot"
+SERVICE_NAME="filipaipilot"
+BUILD_TARGET="./cmd/filipaipilot"
 
-echo -e "${BLUE}Spoustim deployment LexPilot Demo...${NC}"
+echo -e "${BLUE}Spoustim deployment FilipAiPilot...${NC}"
 
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin:/home/skybedy/go/bin
 if ! command -v go >/dev/null 2>&1; then
@@ -72,4 +72,4 @@ else
     echo -e "${YELLOW}   Spust rucne: ./${BINARY_NAME}${NC}"
 fi
 
-echo -e "${GREEN}Deployment LexPilot Demo dokoncen.${NC}"
+echo -e "${GREEN}Deployment FilipAiPilot dokoncen.${NC}"

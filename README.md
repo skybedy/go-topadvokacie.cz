@@ -1,13 +1,13 @@
-# LexPilot Demo
+# FilipAiPilot
 
-LexPilot Demo je lokální MVP aplikace pro běžného komerčního právníka. Ukazuje, jak lze obecné AI použití zabalit do konkrétních právnických workflow nad dokumenty, smlouvami a právními texty.
+FilipAiPilot je lokální MVP aplikace pro běžného komerčního právníka. Ukazuje, jak lze obecné AI použití zabalit do konkrétních právnických workflow nad dokumenty, smlouvami a právními texty.
 
 Aplikace běží jako jednoduchý Go server se server-side renderovaným HTML frontendem a Tailwind CSS přes CDN. Bez `OPENAI_API_KEY` funguje v mock režimu s připravenými odpověďmi.
 
 ## Spuštění
 
 ```bash
-go run ./cmd/lexpilot
+go run ./cmd/filipaipilot
 ```
 
 Otevřete:
@@ -36,7 +36,7 @@ Na Ubuntu VPS je nejjednodušší buildnout Go binárku a spouštět ji přes sy
 
 ```bash
 go test ./...
-go build -o lexpilot ./cmd/lexpilot
+go build -o filipaipilot ./cmd/filipaipilot
 ```
 
 Pro PDF upload nainstalujte systémový parser:
@@ -51,12 +51,12 @@ Součástí projektu je jednoduchý deploy script:
 ./deploy.sh
 ```
 
-Script provede `git pull`, `go test ./...`, build binárky `lexpilot` a pokusí se restartovat systemd službu `lexpilot.service`, pokud na serveru existuje. `.env` zůstává mimo git a musí být připravený na serveru.
+Script provede `git pull`, `go test ./...`, build binárky `filipaipilot` a pokusí se restartovat systemd službu `filipaipilot.service`, pokud na serveru existuje. `.env` zůstává mimo git a musí být připravený na serveru.
 
 ## Struktura
 
 ```text
-cmd/lexpilot/main.go     vstupní bod aplikace
+cmd/filipaipilot/main.go     vstupní bod aplikace
 internal/ai/             AI rozhraní, mock klient a OpenAI klient
 internal/model/          sdílené datové struktury
 internal/web/            HTTP handlery a ukázková data

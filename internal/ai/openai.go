@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"lexdemo/internal/model"
+	"filipaipilot/internal/model"
 )
 
 type OpenAIClient struct {

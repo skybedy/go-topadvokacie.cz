@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"lexdemo/internal/model"
+	"filipaipilot/internal/model"
 )
 
 type MockAIClient struct{}

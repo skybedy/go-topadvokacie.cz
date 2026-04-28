@@ -4,7 +4,7 @@
 
 ### Projekt zustava male lokalni Go demo
 
-LexPilot Demo je vedome male MVP, ne produkcni pravni system. Prioritou je rychle a srozumitelne predvest Filipovi praktickou hodnotu AI workflow nad pravnimi texty.
+FilipAiPilot je vedome male MVP, ne produkcni pravni system. Prioritou je rychle a srozumitelne predvest Filipovi praktickou hodnotu AI workflow nad pravnimi texty.
 
 Duvod: Filip uz zna obecny ChatGPT chat. Demo ma ukazat hlavne rozdil mezi rucnim promptovanim a opakovatelnym pracovnim nastrojem.
 
@@ -90,9 +90,9 @@ Duvod: pravnik vidi, co se z dokumentu opravdu nacetlo, muze text rychle zkontro
 
 ### Deploy script zustava jednoduchy a nedestruktivni
 
-Projekt ma `deploy.sh`, ktery provede `git pull`, `go test ./...`, `go build -o lexpilot ./cmd/lexpilot` a restartuje systemd sluzbu `lexpilot`, pokud existuje.
+Projekt ma `deploy.sh`, ktery provede `git pull`, `go test ./...`, `go build -o filipaipilot ./cmd/filipaipilot` a restartuje systemd sluzbu `filipaipilot`, pokud existuje.
 
-Duvod: LexPilot je male Go MVP bez Node buildu. Agresivni mazani zdrojaku a `skip-worktree` uklid z jine aplikace by tady pridaly krehkost bez zasadniho prinosu.
+Duvod: FilipAiPilot je male Go MVP bez Node buildu. Agresivni mazani zdrojaku a `skip-worktree` uklid z jine aplikace by tady pridaly krehkost bez zasadniho prinosu.
 
 ### Bezpecnostni upozorneni je soucast produktu
 

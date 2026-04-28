@@ -2,7 +2,7 @@
 
 ## Ted
 
-- [ ] Udrzet demo spustitelne jednim prikazem `go run ./cmd/lexpilot`.
+- [ ] Udrzet demo spustitelne jednim prikazem `go run ./cmd/filipaipilot`.
 - [ ] Pri kazde vetsi zmene aktualizovat `PROJECT_CONTEXT.md`, `TODO.md` a `DECISIONS.md`.
 - [ ] Overovat zmeny pres `go test ./...`.
 - [x] Pripravit kratky demo scenar pro Filipa: analyza smlouvy, red flags, priprava hovoru, porovnani dvou verzi.

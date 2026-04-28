@@ -47,4 +47,4 @@ Pri praci ma Codex myslet produktove i technicky:
 
 ## Bezpecnostni ramovani
 
-LexPilot Demo neni produkcni pravni software. Vystupy AI slouzi pouze jako pracovni podklad pro pravnika a nenahrazuji odborne pravni posouzeni. Realna klientska data se do dema nemaji vkladat bez pravniho a bezpecnostniho posouzeni.
+FilipAiPilot neni produkcni pravni software. Vystupy AI slouzi pouze jako pracovni podklad pro pravnika a nenahrazuji odborne pravni posouzeni. Realna klientska data se do dema nemaji vkladat bez pravniho a bezpecnostniho posouzeni.

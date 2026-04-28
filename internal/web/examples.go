@@ -1,6 +1,6 @@
 package web
 
-import "lexdemo/internal/model"
+import "filipaipilot/internal/model"
 
 var Examples = []model.Example{
 	{
