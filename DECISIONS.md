@@ -88,6 +88,12 @@ Frontend po vyberu souboru vola `/upload-text`, zobrazi stav nacitani a vlozi vy
 
 Duvod: pravnik vidi, co se z dokumentu opravdu nacetlo, muze text rychle zkontrolovat nebo upravit a demo pusobi kontrolovaneji nez skryty upload az pri odeslani formulare.
 
+### Dlouhe operace maji viditelny stav
+
+UI zobrazuje spinner pri nacitani souboru do textoveho pole a samostatny loading panel pri cekani na odpoved modelu.
+
+Duvod: PDF/DOCX parsing i OpenAI odpoved mohou trvat nekolik sekund. Filip musi videt, ze aplikace pracuje a ne zasekla se.
+
 ### Deploy script zustava jednoduchy a nedestruktivni
 
 Projekt ma `deploy.sh`, ktery provede `git pull`, `go test ./...`, `go build -o filipaipilot ./cmd/filipaipilot` a restartuje systemd sluzbu `filipaipilot`, pokud existuje.

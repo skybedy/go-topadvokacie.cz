@@ -1,6 +1,8 @@
 const actionSelect = document.querySelector("#action");
 const secondDoc = document.querySelector("#second-doc");
 const exampleSelect = document.querySelector("#example");
+const analysisForm = document.querySelector("form");
+const analysisLoading = document.querySelector("#analysis-loading");
 const submitButton = document.querySelector('button[type="submit"]');
 let activeUploads = 0;
 
@@ -26,15 +28,36 @@ if (exampleSelect) {
 
 function setUploadStatus(status, message, tone = "muted") {
   if (!status) return;
+  const box = document.getElementById(`${status.id}_box`);
+  const spinner = box?.querySelector("[data-upload-spinner]");
   status.textContent = message;
-  status.classList.remove("text-slate-500", "text-blue-700", "text-emerald-700", "text-red-700");
-  const toneClass = {
-    muted: "text-slate-500",
-    loading: "text-blue-700",
-    success: "text-emerald-700",
-    error: "text-red-700",
-  }[tone] || "text-slate-500";
-  status.classList.add(toneClass);
+  if (box) {
+    box.classList.remove(
+      "hidden",
+      "border-blue-200",
+      "bg-blue-50",
+      "text-blue-800",
+      "border-emerald-200",
+      "bg-emerald-50",
+      "text-emerald-800",
+      "border-red-200",
+      "bg-red-50",
+      "text-red-800",
+      "border-slate-200",
+      "bg-slate-50",
+      "text-slate-700",
+    );
+    const toneClasses = {
+      muted: ["border-slate-200", "bg-slate-50", "text-slate-700"],
+      loading: ["border-blue-200", "bg-blue-50", "text-blue-800"],
+      success: ["border-emerald-200", "bg-emerald-50", "text-emerald-800"],
+      error: ["border-red-200", "bg-red-50", "text-red-800"],
+    }[tone] || ["border-slate-200", "bg-slate-50", "text-slate-700"];
+    box.classList.add(...toneClasses);
+  }
+  if (spinner) {
+    spinner.classList.toggle("hidden", tone !== "loading");
+  }
 }
 
 function setUploadBusy(isBusy) {
@@ -86,6 +109,19 @@ document.querySelectorAll("[data-upload-input]").forEach((input) => {
     }
   });
 });
+
+if (analysisForm && analysisLoading) {
+  analysisForm.addEventListener("submit", () => {
+    if (activeUploads > 0) return;
+    analysisLoading.classList.remove("hidden");
+    analysisLoading.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.innerText = "Čekám na odpověď modelu...";
+      submitButton.classList.add("opacity-60", "cursor-wait");
+    }
+  });
+}
 
 document.querySelectorAll("[data-copy-button]").forEach((button) => {
   button.addEventListener("click", async () => {

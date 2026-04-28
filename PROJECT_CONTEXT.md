@@ -16,6 +16,7 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 - Hlavni formular podporuje volbu delky vystupu: strucne, standardne, detailne.
 - Hlavni formular podporuje perspektivu vystupu: pro pravnika, pro klienta, pro vyjednavani.
 - Vystupni sekce maji tlacitko pro kopirovani textu do schranky.
+- UI zobrazuje preloader pri nacitani uploadovaneho souboru i pri cekani na odpoved modelu.
 - Homepage obsahuje kratky demo scenar pro Filipa s rychlymi odkazy na vhodne ulozene prompty.
 - Upload souboru probiha pred analyzou pres endpoint `/upload-text`; vytazeny text se vlozi do viditelneho textarea pole a az potom uzivatel spousti analyzu.
 - `.env.example` nastavuje `OPENAI_MODEL=gpt-5-nano` a `OPENAI_TIMEOUT_SECONDS=180`.
