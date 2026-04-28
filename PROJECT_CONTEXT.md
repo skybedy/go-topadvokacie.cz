@@ -4,7 +4,7 @@
 
 LexPilot Demo je lokalni Go MVP pro komercniho pravnika Filipa. Cilem je ukazat rozdil mezi rucnim pouzivanim ChatGPT a strukturovanym pravnickym workflow nastrojem nad smlouvami a pravnimi texty.
 
-Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy: pravnik vlozi dokument, vybere workflow nebo ulozeny prompt a dostane strukturovany vystup jako pracovni podklad.
+Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy: pravnik vlozi dokument, vybere ulozeny pravni prompt a dostane strukturovany vystup jako pracovni podklad.
 
 ## Aktualni stav
 
@@ -16,34 +16,23 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 - Hlavni formular podporuje volbu delky vystupu: strucne, standardne, detailne.
 - Hlavni formular podporuje perspektivu vystupu: pro pravnika, pro klienta, pro vyjednavani.
 - Vystupni sekce maji tlacitko pro kopirovani textu do schranky.
-- Homepage obsahuje kratky demo scenar pro Filipa s rychlymi odkazy na vhodne workflow.
+- Homepage obsahuje kratky demo scenar pro Filipa s rychlymi odkazy na vhodne ulozene prompty.
 - Upload souboru probiha pred analyzou pres endpoint `/upload-text`; vytazeny text se vlozi do viditelneho textarea pole a az potom uzivatel spousti analyzu.
 - `.env.example` nastavuje `OPENAI_MODEL=gpt-5-nano` a `OPENAI_TIMEOUT_SECONDS=180`.
 - Go modul se jmenuje `lexdemo`.
 - Projekt ma zakladni testy pro upload/parser v `internal/web/server_test.go`.
 - Adresar je git repozitar na vetvi `main`.
 
-## Hlavni workflow
-
-Vestavene workflow:
-
-- Analyza smlouvy
-- Shrnuti pro klienta
-- Rizikove body
-- Navrh zmen
-- Otazky na klienta
-- Kontrola konzistence
-- Prevod pravniho textu do srozumitelne reci
-- Porovnani dvou verzi dokumentu
-
-Prompt knihovna:
+## Prompt knihovna
 
 - Kontrola smlouvy
 - Srozumitelne pro klienta
+- Otazky na klienta
 - Navrh e-mailu bez odeslani
 - Protiargumentace protistrany
 - Checklist pred podpisem
 - Revize obchodnich podminek
+- Kontrola konzistence
 - Extrakce povinnosti a lhut
 - Red flags pred podpisem
 - Vyjednavaci pozice
@@ -51,11 +40,12 @@ Prompt knihovna:
 - Co ve smlouve chybi
 - Komentare do revize
 - Executive summary pro jednatele
+- Porovnani dvou verzi
 
 ## Hlavni adresare a soubory
 
 - `cmd/lexpilot/main.go` - vstupni bod aplikace, nacitani `.env`, volba mock/OpenAI klienta, spusteni serveru.
-- `internal/ai/client.go` - AI interface, system prompt, seznam workflow, prompt knihovna a volby vystupu.
+- `internal/ai/client.go` - AI interface, system prompt, prompt knihovna a volby vystupu.
 - `internal/ai/mock.go` - mock AI klient s pripravenymi vystupy pro lokalni demo bez API klice.
 - `internal/ai/openai.go` - OpenAI klient pres `net/http`, JSON response format a fallback pri nevalidnim JSON vystupu.
 - `internal/model/result.go` - datove struktury `Result`, `Section` a `Example`.
@@ -128,7 +118,7 @@ Pak otevrit `http://localhost:8080`.
 - PDF import pouziva lokalni `pdftotext` z balicku `poppler-utils`, pokud je v systemu dostupny.
 - Stary binarni `.doc` zatim neni podporovan; uzivatel ma dokument ulozit jako `.docx` nebo PDF.
 - Limit uploadu je 5 MB, vytazeny text se pro demo zkracuje na 512 KB.
-- Prompty a workflow jsou zapsane primo v Go kodu, ne v databazi ani v externich souborech.
+- Prompty jsou zapsane primo v Go kodu, ne v databazi ani v externich souborech.
 - Historie analyz se neuklada.
 - Export do DOCX/PDF neni implementovan.
 - Neexistuje prihlaseni, role, opravneni ani auditni logy.
@@ -139,7 +129,7 @@ Pak otevrit `http://localhost:8080`.
 ## Poznamky pro dalsi navazani
 
 - Zachovej formulaci upozorneni: "Demo nastroj. Vystupy AI slouzi pouze jako pracovni podklad pro pravnika a nenahrazuji odborne pravni posouzeni."
-- E-mailove workflow smi pripravovat jen draft; nic se nema odesilat.
-- Nejvetsi produktova hodnota dema je v ulozenych, pojmenovanych a verzovanych workflow, ne v samotnem API volani.
+- E-mailovy prompt smi pripravovat jen draft; nic se nema odesilat.
+- Nejvetsi produktova hodnota dema je v ulozenych, pojmenovanych a verzovanych promptech, ne v samotnem API volani.
 - Pro dalsi wow efekt dava smysl zlepsit ukazkove dokumenty, pridat export vystupu a doplnit male testy pro prompt knihovnu.
 - Pred pridanim zavislosti vzdy zvaz, jestli se tim demo opravdu vyrazne zlepsi.

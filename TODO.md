@@ -18,8 +18,9 @@
 - [x] Pridat prompt "Co ve smlouve chybi" pro identifikaci neupravenych nebo nejasnych oblasti.
 - [x] Pridat prompt "Komentar do revize" pro navrhy komentaru k ustanovenim.
 - [x] Pridat prompt "Executive summary pro jednatele".
-- [ ] Zlepsit ukazkove dokumenty tak, aby lepe demonstrovaly rozdil mezi workflow.
-- [ ] Doplnit zakladni unit testy pro `ActionByID`, `PromptTemplateByID`, upload validaci a `.env` parsing.
+- [x] Odstranit oddelenou umelou vrstvu workflow a pouzivat jen ulozene pravni prompty.
+- [ ] Zlepsit ukazkove dokumenty tak, aby lepe demonstrovaly rozdil mezi pravnimi prompty.
+- [ ] Doplnit zakladni unit testy pro `PromptTemplateByID`, upload validaci a `.env` parsing.
 - [ ] Doladit demo scenar pro porovnani dvou verzi tak, aby umel predvyplnit i dokument B.
 
 ## Pozdeji

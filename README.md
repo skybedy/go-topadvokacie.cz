@@ -65,22 +65,11 @@ static/                  drobný CSS a Vanilla JavaScript
 examples/                fiktivní právní texty
 ```
 
-## Workflow
-
-Aplikace obsahuje osm akcí:
-
-- Analýza smlouvy
-- Shrnutí pro klienta
-- Rizikové body
-- Návrh změn
-- Otázky na klienta
-- Kontrola konzistence
-- Převod právního textu do srozumitelné řeči
-- Porovnání dvou verzí dokumentu
+## Právní režimy
 
 Dokument lze vložit ručně nebo nahrát jako `.txt`, `.md`, `.csv`, `.rst`, `.log`, `.docx` nebo `.pdf`. Po výběru souboru se jeho text nejdřív načte do textového pole, takže právník vidí obsah před spuštěním analýzy. DOCX import používá jednoduché ZIP/XML vytěžení textu přímo v Go. PDF import používá lokální nástroj `pdftotext` z balíčku `poppler-utils`, pokud je v systému dostupný. Starší binární `.doc` zatím podporovaný není; dokument je vhodné uložit jako `.docx` nebo PDF.
 
-Pracovní panel navíc umožňuje nastavit délku výstupu (`stručně`, `standardně`, `detailně`) a perspektivu (`pro právníka`, `pro klienta`, `pro vyjednávání`). Výstupní sekce lze kopírovat samostatně do schránky.
+Pracovní panel používá jen uložené právní prompty. Neexistuje oddělená umělá vrstva workflow; každý režim je pojmenovaný, verzovaný prompt s vlastní instrukcí. Panel navíc umožňuje nastavit délku výstupu (`stručně`, `standardně`, `detailně`) a perspektivu (`pro právníka`, `pro klienta`, `pro vyjednávání`). Výstupní sekce lze kopírovat samostatně do schránky.
 
 ## Prompt knihovna
 
@@ -88,17 +77,20 @@ Součástí dema je i osobní právnická prompt knihovna. Nejde o další chat,
 
 - kontrola smlouvy,
 - převod do srozumitelné řeči pro klienta,
+- otázky na klienta,
 - návrh e-mailu bez odeslání,
 - protiargumentace protistrany,
 - checklist před podpisem,
 - revize obchodních podmínek,
+- kontrola konzistence,
 - extrakce povinností a lhůt,
 - red flags před podpisem,
 - vyjednávací pozice,
 - příprava hovoru s klientem,
 - kontrola chybějících oblastí ve smlouvě,
 - komentáře do revize,
-- executive summary pro jednatele.
+- executive summary pro jednatele,
+- porovnání dvou verzí dokumentu.
 
 V testovací verzi jsou prompty uložené přímo v Go kódu v `internal/ai/client.go`. V produkci by dávalo smysl přesunout je do databáze nebo verzovaných souborů, přidat vlastní prompty pro konkrétního právníka a měřit kvalitu výstupů na ukázkových dokumentech.
 
@@ -108,7 +100,7 @@ Výstup má strukturu `Result`: `Title`, `Summary`, `Sections`, `Warnings` a `Ra
 
 ChatGPT Plus paušál se pro tuto aplikaci typicky nepoužívá. Lokální aplikace volá OpenAI přes API, takže je potřeba samostatný `OPENAI_API_KEY` a API usage se účtuje zvlášť podle tokenů.
 
-Bez API klíče aplikace běží v mock režimu zdarma a je použitelná pro prezentaci workflow.
+Bez API klíče aplikace běží v mock režimu zdarma a je použitelná pro prezentaci právních režimů.
 
 ## Bezpečnost a důvěrnost dat
 

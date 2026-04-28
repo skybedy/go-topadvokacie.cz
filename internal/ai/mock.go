@@ -31,6 +31,13 @@ func (c *MockAIClient) Analyze(ctx context.Context, action string, inputA string
 			{"Klientské vysvětlení", []string{"Text říká, kdo má co dodat, kdy a co se stane při porušení.", "Nejdůležitější je pohlídat si sankce, ukončení a praktické důsledky pro běžný provoz."}},
 			{"Poznámka pro právníka", []string{"Před odesláním klientovi zkontrolujte, zda zjednodušení nezměnilo právní význam."}},
 		}), nil
+	case "prompt-client-questions":
+		return result("Prompt knihovna: Otázky na klienta", "Tyto otázky pomohou doplnit skutkový a obchodní kontext před úpravou dokumentu.", []model.Section{
+			{"Skutkové", []string{"Kdo bude za klienta přebírat plnění?", "Existují přílohy nebo technická specifikace, na které text odkazuje?"}},
+			{"Obchodní", []string{"Jaká je maximální přijatelná výše smluvní pokuty?", "Je pro klienta důležitější rychlé ukončení, nebo stabilita vztahu?"}},
+			{"Právní", []string{"Má být odpovědnost limitována?", "Má smlouva řešit mlčenlivost i po skončení vztahu?"}},
+			{"Důkazní", []string{"Jak se bude prokazovat předání, vady a reklamace?", "Kde budou ukládány objednávky a akceptace?"}},
+		}), nil
 	case "prompt-email-draft":
 		return result("Prompt knihovna: Návrh e-mailu bez odeslání", "Prompt připraví pouze pracovní návrh e-mailu. Nic se automaticky neodesílá.", []model.Section{
 			{"Draft e-mailu", []string{"Dobrý den, zasílám několik bodů k doplnění smlouvy. Prosím zejména o potvrzení lhůt, odpovědnosti a sankcí.", "Po doplnění podkladů připravím upravené znění."}},
@@ -51,6 +58,12 @@ func (c *MockAIClient) Analyze(ctx context.Context, action string, inputA string
 		return result("Prompt knihovna: Revize obchodních podmínek", "Prompt prochází obchodní podmínky pohledem typických B2B/B2C rizik.", []model.Section{
 			{"Kontrolní body", []string{"Identifikace poskytovatele, objednávkový proces a platební podmínky.", "Reklamace, odpovědnost, odstoupení a jednostranné změny podmínek.", "Spotřebitelská ustanovení, pokud jde o B2C vztah."}},
 			{"Typická rizika", []string{"Nejasné změny podmínek bez oznámení.", "Chybějící reklamační proces.", "Příliš široké omezení odpovědnosti."}},
+		}), nil
+	case "prompt-consistency-check":
+		return result("Prompt knihovna: Kontrola konzistence", "Text působí jako dokument, u kterého je vhodné ověřit návaznost definic, lhůt a sankcí.", []model.Section{
+			{"Rozpory", []string{"Zkontrolujte, zda se stejná strana neoznačuje různými názvy.", "Ověřte, zda výpovědní doba odpovídá ustanovením o ukončení."}},
+			{"Chybějící části", []string{"Může chybět proces předání plnění.", "U smluvní pokuty často chybí vztah k náhradě škody."}},
+			{"Duplicity", []string{"Prověřte, zda se povinnost mlčenlivosti neopakuje s rozdílným rozsahem."}},
 		}), nil
 	case "prompt-obligations-deadlines":
 		return result("Prompt knihovna: Extrakce povinností a lhůt", "Prompt vytáhne z dokumentu praktickou tabulku kdo má co udělat, do kdy a co hrozí při nesplnění.", []model.Section{
@@ -90,41 +103,8 @@ func (c *MockAIClient) Analyze(ctx context.Context, action string, inputA string
 			{"Tři hlavní rizika", []string{"Neomezená odpovědnost může vytvořit nepřiměřené finanční riziko.", "Smluvní pokuta může být vysoká vzhledem k významu porušení.", "Nejasné předání plnění může vést ke sporu o splnění."}},
 			{"Rozhodnutí vedení", []string{"Stanovit maximální akceptovatelný limit odpovědnosti.", "Rozhodnout, zda je obchodně nutné trvat na snížení sankcí.", "Potvrdit, kdo bude za klienta přebírat plnění."}},
 		}), nil
-	case "client-summary":
-		return result("Shrnutí pro klienta", "Dokument upravuje základní obchodní vztah mezi stranami. Klient by měl věnovat pozornost rozsahu povinností, lhůtám, sankcím a možnostem ukončení.", []model.Section{
-			{"Jednoduše řečeno", []string{"Text zakládá povinnosti obou stran a počítá se sankcí při porušení.", "Před podpisem je vhodné ověřit, zda jsou lhůty, cena a odpovědnost nastavené obchodně přijatelně."}},
-			{"Co si pohlídat", []string{"Zda je jasně popsáno plnění.", "Zda sankce odpovídají významu povinností.", "Zda má klient praktickou možnost smlouvu ukončit."}},
-		}), nil
-	case "risk-points":
-		return result("Rizikové body", "Demo identifikovalo několik typických rizik, která by komerční právník pravděpodobně prověřil před podpisem.", []model.Section{
-			{"High", []string{"Neomezená odpovědnost: pokud text nestanoví limit, může být ekonomické riziko nepřiměřené. Návrh: doplnit cap odpovědnosti.", "Jednostranná změna podmínek: pokud ji má jen jedna strana, doporučuji doplnit oznámení a právo odstoupit."}},
-			{"Medium", []string{"Nejasná lhůta plnění: může vést ke sporu o prodlení. Návrh: doplnit konkrétní datum nebo mechanismus výpočtu.", "Smluvní pokuta bez vazby na závažnost porušení: zvážit odstupňování."}},
-			{"Low", []string{"Terminologická nejednotnost: sjednotit označení smluvních stran a dokumentů."}},
-		}), nil
-	case "change-proposal":
-		return result("Návrh změn", "Doporučené úpravy míří hlavně na přesnost, vyváženost a snížení budoucí spornosti.", []model.Section{
-			{"Priorita 1", []string{"Doplnit přesný předmět plnění a akceptační proces. Návrh: Plnění se považuje za předané až písemným potvrzením objednatele.", "Omezit odpovědnost přiměřeným limitem, například na výši uhrazené odměny za posledních 12 měsíců."}},
-			{"Priorita 2", []string{"Zpřesnit výpovědní dobu a následky ukončení.", "Doplnit postup při změnových požadavcích a vícenákladech."}},
-		}), nil
-	case "client-questions":
-		return result("Otázky na klienta", "Tyto otázky pomohou doplnit skutkový a obchodní kontext před úpravou dokumentu.", []model.Section{
-			{"Skutkové", []string{"Kdo bude za klienta přebírat plnění?", "Existují přílohy nebo technická specifikace, na které text odkazuje?"}},
-			{"Obchodní", []string{"Jaká je maximální přijatelná výše smluvní pokuty?", "Je pro klienta důležitější rychlé ukončení, nebo stabilita vztahu?"}},
-			{"Právní", []string{"Má být odpovědnost limitována?", "Má smlouva řešit mlčenlivost i po skončení vztahu?"}},
-			{"Důkazní", []string{"Jak se bude prokazovat předání, vady a reklamace?", "Kde budou ukládány objednávky a akceptace?"}},
-		}), nil
-	case "consistency-check":
-		return result("Kontrola konzistence", "Text působí jako dokument, u kterého je vhodné ověřit návaznost definic, lhůt a sankcí.", []model.Section{
-			{"Rozpory", []string{"Zkontrolujte, zda se stejná strana neoznačuje různými názvy.", "Ověřte, zda výpovědní doba odpovídá ustanovením o ukončení."}},
-			{"Chybějící části", []string{"Může chybět proces předání plnění.", "U smluvní pokuty často chybí vztah k náhradě škody."}},
-			{"Duplicity", []string{"Prověřte, zda se povinnost mlčenlivosti neopakuje s rozdílným rozsahem."}},
-		}), nil
-	case "plain-language":
-		return result("Srozumitelná verze", "Níže je pracovní převod právního textu do jednodušší řeči. Význam by měl zůstat zachovaný, ale formulace nejsou určeny k podpisu.", []model.Section{
-			{"Vysvětlení pro klienta", []string{"Druhá strana musí dodat dohodnuté plnění včas a podle sjednaných parametrů.", "Pokud některá strana poruší důležité povinnosti, může jí vzniknout povinnost zaplatit sankci.", "Smlouvu lze ukončit jen způsoby, které jsou v dokumentu popsané."}},
-		}), nil
-	case "compare-versions":
-		return result("Porovnání dvou verzí", "Druhá verze podle demo výstupu mění zejména rozložení rizika a zpřesňuje některé procesní kroky.", []model.Section{
+	case "prompt-compare-versions":
+		return result("Prompt knihovna: Porovnání dvou verzí", "Druhá verze podle demo výstupu mění zejména rozložení rizika a zpřesňuje některé procesní kroky.", []model.Section{
 			{"Věcné změny", []string{"Zkontrolujte, zda druhá verze nemění rozsah odpovědnosti nebo sankcí.", "Ověřte dopady nových lhůt na provoz klienta."}},
 			{"Stylistické změny", []string{"Některé formulace mohou být kratší, ale právně méně přesné.", "Sjednoťte terminologii mezi oběma verzemi."}},
 			{"Rizikové změny", []string{"Pozor na vypuštění limitu odpovědnosti nebo práva odstoupit.", "Pozor na nenápadné rozšíření mlčenlivosti či zákazu konkurence."}},

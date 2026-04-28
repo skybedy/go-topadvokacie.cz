@@ -25,8 +25,8 @@
               {{if .MockMode}}<span class="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">Mock demo</span>{{else}}<span class="rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">OpenAI API</span>{{end}}
             </div>
             <div class="rounded-md bg-white p-4 shadow-sm">
-              <p class="text-sm font-medium text-slate-950">Předpřipravené workflow místo ručního promptování</p>
-              <p class="mt-2 text-sm leading-6 text-slate-600">Filip vloží dokument, vybere typ práce a dostane strukturovaný výstup v kartách.</p>
+              <p class="text-sm font-medium text-slate-950">Uložené právní prompty místo ručního promptování</p>
+              <p class="mt-2 text-sm leading-6 text-slate-600">Filip vloží dokument, vybere právní režim a dostane strukturovaný výstup v kartách.</p>
             </div>
           </div>
         </div>
@@ -38,7 +38,7 @@
         <div class="mb-5 flex items-start justify-between gap-4">
           <div>
             <h2 class="text-xl font-semibold text-slate-950">Hlavní pracovní panel</h2>
-            <p class="mt-1 text-sm text-slate-500">Vložte dokument, vyberte workflow nebo uložený prompt a spusťte analýzu.</p>
+            <p class="mt-1 text-sm text-slate-500">Vložte dokument, vyberte uložený právní prompt a spusťte analýzu.</p>
           </div>
           <div class="flex gap-2">
             <a href="/prompts" class="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Prompty</a>
@@ -72,14 +72,9 @@
           <textarea id="input_b" name="input_b" rows="8" class="mt-2 w-full resize-y rounded-md border border-slate-300 px-3 py-3 text-sm leading-6 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Vložte druhou verzi dokumentu...">{{.InputB}}</textarea>
         </div>
 
-        <label class="mt-5 block text-sm font-medium text-slate-700" for="action">Workflow nebo uložený prompt</label>
+        <label class="mt-5 block text-sm font-medium text-slate-700" for="action">Uložený právní prompt</label>
         <select id="action" name="action" class="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100">
-          <optgroup label="Workflow">
-            {{range .Actions}}<option value="{{.ID}}" data-second="{{.NeedsSecond}}" {{if eq $.SelectedAction .ID}}selected{{end}}>{{.Label}}</option>{{end}}
-          </optgroup>
-          <optgroup label="Prompt knihovna">
-            {{range .Prompts}}<option value="{{.ID}}" data-second="{{.NeedsSecond}}" {{if eq $.SelectedAction .ID}}selected{{end}}>{{.Label}} · {{.Version}}</option>{{end}}
-          </optgroup>
+          {{range .Prompts}}<option value="{{.ID}}" data-second="{{.NeedsSecond}}" {{if eq $.SelectedAction .ID}}selected{{end}}>{{.Label}} · {{.Category}} · {{.Version}}</option>{{end}}
         </select>
 
         <div class="mt-5 grid gap-4 sm:grid-cols-2">
@@ -110,10 +105,10 @@
           <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Demo scénář pro Filipa</p>
           <h2 class="mt-2 text-xl font-semibold text-slate-950">Ukaž stejný dokument čtyřmi pohledy</h2>
           <div class="mt-4 grid gap-3">
-            <a href="/?example=nda&action=contract-analysis" class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">1. První čtení smlouvy</a>
+            <a href="/?example=nda&prompt=prompt-contract-review" class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">1. První čtení smlouvy</a>
             <a href="/?example=nda&prompt=prompt-red-flags" class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">2. Red flags před podpisem</a>
             <a href="/?example=nda&prompt=prompt-client-call" class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">3. Připrav call s klientem</a>
-            <a href="/?example=dodatek&action=compare-versions" class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">4. Porovnání dvou verzí</a>
+            <a href="/?example=dodatek&prompt=prompt-compare-versions" class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">4. Porovnání dvou verzí</a>
           </div>
         </section>
         {{if .Result}}

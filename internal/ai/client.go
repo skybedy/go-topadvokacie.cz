@@ -17,13 +17,6 @@ type Options struct {
 	Perspective string
 }
 
-type Action struct {
-	ID          string
-	Label       string
-	Description string
-	NeedsSecond bool
-}
-
 type PromptTemplate struct {
 	ID          string
 	Label       string
@@ -34,16 +27,7 @@ type PromptTemplate struct {
 	NeedsSecond bool
 }
 
-var Actions = []Action{
-	{ID: "contract-analysis", Label: "Analýza smlouvy", Description: "Strukturované rozebrání smlouvy do klíčových právních a obchodních částí."},
-	{ID: "client-summary", Label: "Shrnutí pro klienta", Description: "Krátké vysvětlení lidským jazykem bez právnického balastu."},
-	{ID: "risk-points", Label: "Rizikové body", Description: "Seznam rizik včetně závažnosti, důvodu a návrhu řešení."},
-	{ID: "change-proposal", Label: "Návrh změn", Description: "Doporučené úpravy textu, důvod a návrh formulace."},
-	{ID: "client-questions", Label: "Otázky na klienta", Description: "Skutkové, obchodní, právní a důkazní otázky pro další práci."},
-	{ID: "consistency-check", Label: "Kontrola konzistence", Description: "Rozpory, chybějící části, duplicity a nejasnosti."},
-	{ID: "plain-language", Label: "Převod do srozumitelné řeči", Description: "Zachování významu právního textu v řeči pro laiky."},
-	{ID: "compare-versions", Label: "Porovnání dvou verzí", Description: "Věcné, stylistické a rizikové změny mezi dokumenty.", NeedsSecond: true},
-}
+const DefaultPromptID = "prompt-contract-review"
 
 var PromptLibrary = []PromptTemplate{
 	{
@@ -61,6 +45,14 @@ var PromptLibrary = []PromptTemplate{
 		Category:    "Klientská komunikace",
 		Description: "Převod právního textu do krátkého klientského vysvětlení.",
 		Instruction: "Převeď právní text do srozumitelné řeči pro klienta. Zachovej význam, vynech právnický balast a upozorni na praktické dopady. Nepiš jako advokátní stanovisko.",
+	},
+	{
+		ID:          "prompt-client-questions",
+		Label:       "Otázky na klienta",
+		Version:     "v1.0",
+		Category:    "Klientská práce",
+		Description: "Vytvoří skutkové, obchodní, právní a důkazní otázky pro další práci.",
+		Instruction: "Vytvoř otázky na klienta k vloženému dokumentu. Rozděl je na skutkové, obchodní, právní a důkazní. U každé otázky vysvětli, proč je důležitá pro další postup.",
 	},
 	{
 		ID:          "prompt-email-draft",
@@ -93,6 +85,14 @@ var PromptLibrary = []PromptTemplate{
 		Category:    "Obchodní podmínky",
 		Description: "Kontrola obchodních podmínek z pohledu B2B/B2C rizik.",
 		Instruction: "Zkontroluj obchodní podmínky. Zaměř se na identifikaci poskytovatele, objednávku, platby, reklamace, odpovědnost, odstoupení, změny podmínek, ochranu spotřebitele a nejasné formulace.",
+	},
+	{
+		ID:          "prompt-consistency-check",
+		Label:       "Kontrola konzistence",
+		Version:     "v1.0",
+		Category:    "Kontrola",
+		Description: "Hledá rozpory, duplicity, nedefinované pojmy a nejasné návaznosti v dokumentu.",
+		Instruction: "Zkontroluj konzistenci dokumentu. Zaměř se na rozpory, duplicity, nedefinované pojmy, nejasné odkazy, rozdílné označení stran a ustanovení, která na sebe nenavazují.",
 	},
 	{
 		ID:          "prompt-obligations-deadlines",
@@ -150,25 +150,15 @@ var PromptLibrary = []PromptTemplate{
 		Description: "Manažerské shrnutí pro rychlé obchodní rozhodnutí.",
 		Instruction: "Připrav executive summary pro jednatele nebo vedení. Stručně uveď, zda dokument podepsat, nepodepsat, nebo podepsat po úpravách. Přidej tři hlavní rizika, obchodní dopad a rozhodnutí, která musí udělat klient.",
 	},
-}
-
-func ActionByID(id string) Action {
-	for _, action := range Actions {
-		if action.ID == id {
-			return action
-		}
-	}
-	for _, prompt := range PromptLibrary {
-		if prompt.ID == id {
-			return Action{
-				ID:          prompt.ID,
-				Label:       prompt.Label,
-				Description: prompt.Description,
-				NeedsSecond: prompt.NeedsSecond,
-			}
-		}
-	}
-	return Actions[0]
+	{
+		ID:          "prompt-compare-versions",
+		Label:       "Porovnání dvou verzí",
+		Version:     "v1.0",
+		Category:    "Porovnání",
+		Description: "Porovná dvě verze dokumentu a oddělí věcné, stylistické a rizikové změny.",
+		Instruction: "Porovnej dokument A a dokument B. Vypiš věcné změny, stylistické změny a rizikové právní nebo obchodní posuny. U každé významné změny napiš, proč může být důležitá a co má právník ověřit.",
+		NeedsSecond: true,
+	},
 }
 
 func PromptTemplateByID(id string) (PromptTemplate, bool) {
@@ -178,4 +168,14 @@ func PromptTemplateByID(id string) (PromptTemplate, bool) {
 		}
 	}
 	return PromptTemplate{}, false
+}
+
+func PromptTemplateByIDOrDefault(id string) PromptTemplate {
+	if prompt, ok := PromptTemplateByID(id); ok {
+		return prompt
+	}
+	if prompt, ok := PromptTemplateByID(DefaultPromptID); ok {
+		return prompt
+	}
+	return PromptLibrary[0]
 }

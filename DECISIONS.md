@@ -36,7 +36,7 @@ Duvod: modely a dostupnost API se meni, proto nema byt model natvrdo svazany s k
 
 ### Nepouziva se automaticke odesilani e-mailu
 
-Workflow muze pripravit pouze navrh e-mailu bez odeslani.
+E-mailovy prompt muze pripravit pouze navrh e-mailu bez odeslani.
 
 Duvod: Filip zatim nechce sverovat AI e-mailovou schranku ani automatickou komunikaci. Bezpecnejsi a vhodnejsi pro demo je jen draft, ktery pravnik zkontroluje.
 
@@ -52,11 +52,11 @@ AI klient ocekava JSON objekt s poli:
 
 Duvod: strukturovany vystup se lepe zobrazuje v UI a ukazuje hodnotu workflow nastroje oproti volnemu chatu.
 
-### Prompty jsou zatim v Go kodu
+### Hlavni jednotkou produktu je ulozeny prompt
 
-Workflow a prompt knihovna jsou aktualne v `internal/ai/client.go`.
+Samostatna vrstva vestavenych workflow byla odstranena. Pracovni panel pouziva jen ulozene pravni prompty z `internal/ai/client.go`.
 
-Duvod: pro MVP je to nejjednodussi a nejprehlednejsi. Pozdeji muze davat smysl presun do databaze nebo verzovanych souboru.
+Duvod: kdyz je aplikace napojena na realny model, paralelni seznam "workflow" a "promptu" zbytecne motal UI i produktove vysvetleni. Ulozeny prompt je srozumitelnejsi jednotka: ma nazev, kategorii, verzi, popis a instrukci.
 
 ### Vystup ma nastavitelny rozsah a perspektivu
 

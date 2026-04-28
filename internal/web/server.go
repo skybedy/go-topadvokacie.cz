@@ -30,7 +30,6 @@ type Server struct {
 type PageData struct {
 	Title           string
 	Active          string
-	Actions         []ai.Action
 	Prompts         []ai.PromptTemplate
 	Examples        []model.Example
 	SelectedAction  string
@@ -71,14 +70,10 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := s.baseData("LexPilot Demo", "home")
-	data.SelectedAction = "contract-analysis"
 	if r.Method == http.MethodGet {
 		if example, ok := ExampleByID(r.URL.Query().Get("example")); ok {
 			data.SelectedExample = example.ID
 			data.InputA = example.Content
-		}
-		if action := strings.TrimSpace(r.URL.Query().Get("action")); action != "" {
-			data.SelectedAction = ai.ActionByID(action).ID
 		}
 		if _, ok := ai.PromptTemplateByID(r.URL.Query().Get("prompt")); ok {
 			data.SelectedAction = r.URL.Query().Get("prompt")
@@ -98,6 +93,7 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 		data.InputA = strings.TrimSpace(r.FormValue("input_a"))
 		data.InputB = strings.TrimSpace(r.FormValue("input_b"))
 		data.SelectedExample = r.FormValue("example")
+		data.SelectedAction = ai.PromptTemplateByIDOrDefault(data.SelectedAction).ID
 
 		uploadedA, err := readUploadedText(r, "file_a")
 		if err != nil {
@@ -124,7 +120,7 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 			s.render(w, "home.html", data)
 			return
 		}
-		if ai.ActionByID(data.SelectedAction).NeedsSecond && data.InputB == "" {
+		if ai.PromptTemplateByIDOrDefault(data.SelectedAction).NeedsSecond && data.InputB == "" {
 			data.Error = "Pro porovnání dvou verzí vložte také druhý dokument."
 			s.render(w, "home.html", data)
 			return
@@ -399,10 +395,9 @@ func (s *Server) baseData(title, active string) PageData {
 	return PageData{
 		Title:          title,
 		Active:         active,
-		Actions:        ai.Actions,
 		Prompts:        ai.PromptLibrary,
 		Examples:       Examples,
-		SelectedAction: "contract-analysis",
+		SelectedAction: ai.DefaultPromptID,
 		DetailLevel:    "standard",
 		Perspective:    "lawyer",
 		MockMode:       s.mockMode,

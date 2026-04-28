@@ -90,7 +90,7 @@ func (c *OpenAIClient) Analyze(ctx context.Context, action string, inputA string
 	var result model.Result
 	if err := json.Unmarshal([]byte(content), &result); err != nil {
 		return model.Result{
-			Title:   ActionByID(action).Label,
+			Title:   PromptTemplateByIDOrDefault(action).Label,
 			Summary: "AI vrátila odpověď mimo očekávaný JSON formát. Níže je surový výstup.",
 			Raw:     content,
 			Warnings: []string{
@@ -99,7 +99,7 @@ func (c *OpenAIClient) Analyze(ctx context.Context, action string, inputA string
 		}, nil
 	}
 	if result.Title == "" {
-		result.Title = ActionByID(action).Label
+		result.Title = PromptTemplateByIDOrDefault(action).Label
 	}
 	if len(result.Warnings) == 0 {
 		result.Warnings = []string{"Výstup je pracovní podklad pro právníka, nikoli právní stanovisko."}
@@ -133,16 +133,13 @@ func sanitizeOpenAIError(body []byte) string {
 }
 
 func buildPrompt(action string, inputA string, inputB string, options Options) string {
-	selected := ActionByID(action)
+	selected := PromptTemplateByIDOrDefault(action)
 	var b strings.Builder
-	fmt.Fprintf(&b, "Akce: %s\n", selected.Label)
+	fmt.Fprintf(&b, "Uložený prompt: %s %s\n", selected.Label, selected.Version)
+	fmt.Fprintf(&b, "Kategorie: %s\n", selected.Category)
+	fmt.Fprintf(&b, "Instrukce promptu: %s\n", selected.Instruction)
 	fmt.Fprintf(&b, "Preferovaná délka výstupu: %s\n", outputDetailLabel(options.DetailLevel))
 	fmt.Fprintf(&b, "Perspektiva výstupu: %s\n", outputPerspectiveLabel(options.Perspective))
-	if prompt, ok := PromptTemplateByID(action); ok {
-		fmt.Fprintf(&b, "Prompt knihovna: %s %s\n", prompt.Label, prompt.Version)
-		fmt.Fprintf(&b, "Kategorie: %s\n", prompt.Category)
-		fmt.Fprintf(&b, "Instrukce promptu: %s\n", prompt.Instruction)
-	}
 	b.WriteString("\n")
 	b.WriteString("Vrať výhradně validní JSON ve tvaru:\n")
 	b.WriteString(`{"title":"...","summary":"...","sections":[{"title":"...","items":["..."]}],"warnings":["..."],"raw":""}`)
