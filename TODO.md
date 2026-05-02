@@ -5,6 +5,7 @@
 - [ ] Udrzet demo spustitelne jednim prikazem `go run ./cmd/filipaipilot`.
 - [ ] Pri kazde vetsi zmene aktualizovat `PROJECT_CONTEXT.md`, `TODO.md` a `DECISIONS.md`.
 - [ ] Overovat zmeny pres `go test ./...`.
+- [x] Pridat prepinac AI providera (`openai`/`gemini`) v `.env` bez rozbiti mock rezimu.
 - [x] Zobrazit cekani na odpoved modelu primo v karte vysledku jako viditelny spinner, ne jen zmenu textu.
 - [x] Pripravit kratky demo scenar pro Filipa: analyza smlouvy, red flags, priprava hovoru, porovnani dvou verzi.
 - [x] Pridat tlacitko pro kopirovani jednotlivych vystupnich sekci.

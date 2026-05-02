@@ -331,19 +331,19 @@ func friendlyAnalyzeError(err error) string {
 	message := err.Error()
 	switch {
 	case strings.Contains(message, "401"):
-		return "OpenAI API odmítlo klíč. Zkontrolujte, že je v .env platný OPENAI_API_KEY a že nebyl smazán."
+		return "AI API odmítlo klíč. Zkontrolujte v .env správný provider (`AI_PROVIDER`) a odpovídající API klíč (`OPENAI_API_KEY` nebo `GEMINI_API_KEY`)."
 	case strings.Contains(message, "404") && strings.Contains(message, "model"):
-		return "Zvolený OpenAI model není pro tento API klíč dostupný. Zkuste v .env nastavit OPENAI_MODEL=gpt-4o-mini nebo OPENAI_MODEL=gpt-5-nano."
+		return "Zvolený model není pro tento API klíč dostupný. Zkontrolujte v .env model (`OPENAI_MODEL` nebo `GEMINI_MODEL`) pro zvolený provider."
 	case strings.Contains(message, "429"):
-		return "OpenAI API hlásí limit nebo nedostupný kredit. Zkontrolujte billing, usage limit nebo chvíli počkejte."
+		return "AI API hlásí limit nebo nedostupný kredit. Zkontrolujte billing, usage limit nebo chvíli počkejte."
 	case strings.Contains(message, "insufficient_quota") || strings.Contains(message, "billing"):
-		return "OpenAI API hlásí problém s kreditem nebo billingem. Zkontrolujte nastavení plateb na platform.openai.com."
+		return "AI API hlásí problém s kreditem nebo billingem. Zkontrolujte nastavení plateb u zvoleného providera."
 	case strings.Contains(message, "context_length") || strings.Contains(message, "maximum context"):
 		return "Vložený dokument je pro zvolený model příliš dlouhý. Zkuste kratší text nebo silnější model s větším kontextem."
 	case strings.Contains(message, "context deadline exceeded") || strings.Contains(message, "Client.Timeout") || strings.Contains(message, "timeout"):
-		return "OpenAI API nestihlo odpovědět v časovém limitu. Zkuste kratší dokument, zopakovat požadavek nebo v .env navýšit OPENAI_TIMEOUT_SECONDS."
+		return "AI API nestihlo odpovědět v časovém limitu. Zkuste kratší dokument, zopakovat požadavek nebo v .env navýšit AI_TIMEOUT_SECONDS."
 	case strings.Contains(message, "no such host") || strings.Contains(message, "connection refused"):
-		return "Nepodařilo se připojit k OpenAI API. Zkontrolujte internetové připojení a zkuste to znovu."
+		return "Nepodařilo se připojit k AI API. Zkontrolujte internetové připojení a zkuste to znovu."
 	default:
 		return "Analýza se nepodařila. Detail je v terminálu, kde běží aplikace. Nejčastěji jde o model, API klíč, billing nebo síť."
 	}

@@ -17,18 +17,42 @@ func main() {
 	loadDotEnv(".env")
 
 	addr := env("ADDR", ":8080")
-	apiKey := strings.TrimSpace(os.Getenv("OPENAI_API_KEY"))
-	modelName := env("OPENAI_MODEL", "gpt-4o-mini")
-	openAITimeout := envDurationSeconds("OPENAI_TIMEOUT_SECONDS", 180*time.Second)
+	provider := strings.ToLower(env("AI_PROVIDER", "openai"))
+	openAIKey := strings.TrimSpace(os.Getenv("OPENAI_API_KEY"))
+	openAIModel := env("OPENAI_MODEL", "gpt-4o-mini")
+	geminiKey := strings.TrimSpace(os.Getenv("GEMINI_API_KEY"))
+	geminiModel := env("GEMINI_MODEL", "gemini-2.5-flash")
+	aiTimeout := envDurationSeconds("AI_TIMEOUT_SECONDS", 180*time.Second)
 
 	var client ai.Client
-	mockMode := apiKey == ""
-	if mockMode {
+	mockMode := false
+	switch provider {
+	case "gemini":
+		if geminiKey == "" {
+			mockMode = true
+			client = ai.NewMockAIClient()
+			log.Println("GEMINI_API_KEY is not set; running in mock demo mode")
+		} else {
+			client = ai.NewGeminiClientWithTimeout(geminiKey, geminiModel, aiTimeout)
+			log.Printf("running with provider gemini, model %s and timeout %s", geminiModel, aiTimeout)
+		}
+	case "openai":
+		fallthrough
+	default:
+		if openAIKey == "" {
+			mockMode = true
+			client = ai.NewMockAIClient()
+			log.Println("OPENAI_API_KEY is not set; running in mock demo mode")
+		} else {
+			client = ai.NewOpenAIClientWithTimeout(openAIKey, openAIModel, aiTimeout)
+			log.Printf("running with provider openai, model %s and timeout %s", openAIModel, aiTimeout)
+		}
+	}
+
+	if client == nil {
 		client = ai.NewMockAIClient()
-		log.Println("OPENAI_API_KEY is not set; running in mock demo mode")
-	} else {
-		client = ai.NewOpenAIClientWithTimeout(apiKey, modelName, openAITimeout)
-		log.Printf("running with OpenAI model %s and timeout %s", modelName, openAITimeout)
+		mockMode = true
+		log.Println("AI client was not initialized; running in mock demo mode")
 	}
 
 	server, err := web.NewServer(client, mockMode)

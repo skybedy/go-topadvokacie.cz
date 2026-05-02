@@ -2,7 +2,7 @@
 
 FilipAiPilot je lokální MVP aplikace pro běžného komerčního právníka. Ukazuje, jak lze obecné AI použití zabalit do konkrétních právnických workflow nad dokumenty, smlouvami a právními texty.
 
-Aplikace běží jako jednoduchý Go server se server-side renderovaným HTML frontendem a Tailwind CSS přes CDN. Bez `OPENAI_API_KEY` funguje v mock režimu s připravenými odpověďmi.
+Aplikace běží jako jednoduchý Go server se server-side renderovaným HTML frontendem a Tailwind CSS přes CDN. Umí volat OpenAI i Gemini. Bez odpovídajícího API klíče funguje v mock režimu s připravenými odpověďmi.
 
 ## Spuštění
 
@@ -25,9 +25,19 @@ cp .env.example .env
 Pro reálné OpenAI volání nastavte:
 
 ```env
+AI_PROVIDER=openai
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
-OPENAI_TIMEOUT_SECONDS=180
+AI_TIMEOUT_SECONDS=180
+```
+
+Pro reálné Gemini volání nastavte:
+
+```env
+AI_PROVIDER=gemini
+GEMINI_API_KEY=...
+GEMINI_MODEL=gemini-2.5-flash
+AI_TIMEOUT_SECONDS=180
 ```
 
 ## Produkční build a deploy
@@ -57,7 +67,7 @@ Script provede `git pull`, `go test ./...`, build binárky `filipaipilot` a poku
 
 ```text
 cmd/filipaipilot/main.go     vstupní bod aplikace
-internal/ai/             AI rozhraní, mock klient a OpenAI klient
+internal/ai/             AI rozhraní, mock klient a OpenAI/Gemini klient
 internal/model/          sdílené datové struktury
 internal/web/            HTTP handlery a ukázková data
 templates/               server-side HTML šablony
@@ -96,15 +106,15 @@ V testovací verzi jsou prompty uložené přímo v Go kódu v `internal/ai/clie
 
 Výstup má strukturu `Result`: `Title`, `Summary`, `Sections`, `Warnings` a `Raw` fallback.
 
-## Náklady a OpenAI API
+## Náklady a AI API
 
-ChatGPT Plus paušál se pro tuto aplikaci typicky nepoužívá. Lokální aplikace volá OpenAI přes API, takže je potřeba samostatný `OPENAI_API_KEY` a API usage se účtuje zvlášť podle tokenů.
+ChatGPT Plus paušál se pro tuto aplikaci typicky nepoužívá. Lokální aplikace volá externí AI API (OpenAI nebo Gemini), takže je potřeba samostatný API klíč a usage se účtuje zvlášť podle tokenů.
 
 Bez API klíče aplikace běží v mock režimu zdarma a je použitelná pro prezentaci právních režimů.
 
 ## Bezpečnost a důvěrnost dat
 
-Demo není produkční právní software. Při použití OpenAI API se vložený text odesílá externí službě podle aktuálních podmínek a nastavení daného API účtu. Do demo prostředí nevkládejte skutečná důvěrná klientská data bez odpovídajícího právního a bezpečnostního posouzení.
+Demo není produkční právní software. Při použití AI API se vložený text odesílá externí službě podle aktuálních podmínek a nastavení daného API účtu. Do demo prostředí nevkládejte skutečná důvěrná klientská data bez odpovídajícího právního a bezpečnostního posouzení.
 
 Pro produkční nasazení doporučuji řešit minimálně:
 

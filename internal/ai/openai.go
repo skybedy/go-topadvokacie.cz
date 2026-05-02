@@ -87,8 +87,8 @@ func (c *OpenAIClient) Analyze(ctx context.Context, action string, inputA string
 	}
 
 	content := chat.Choices[0].Message.Content
-	var result model.Result
-	if err := json.Unmarshal([]byte(content), &result); err != nil {
+	result, ok := parseResultContent(content)
+	if !ok {
 		return model.Result{
 			Title:   PromptTemplateByIDOrDefault(action).Label,
 			Summary: "AI vrátila odpověď mimo očekávaný JSON formát. Níže je surový výstup.",

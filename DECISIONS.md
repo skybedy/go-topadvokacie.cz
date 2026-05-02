@@ -2,6 +2,26 @@
 
 ## 2026-04-27 - Aktualni projektova rozhodnuti
 
+## 2026-05-02 - Podpora OpenAI i Gemini pres stejny interface
+
+### AI provider je volitelny pres `.env`
+
+Aplikace nove pouziva promennou `AI_PROVIDER` s hodnotami `openai` nebo `gemini`.
+
+Duvod: Filip muze rychle testovat ruzne modely a providery bez zmeny UI nebo prepisu aplikačni logiky.
+
+### API klice jsou oddelene podle providera
+
+Pro OpenAI zustava `OPENAI_API_KEY`, pro Gemini je `GEMINI_API_KEY`. Pri chybejicim klici pro zvoleny provider aplikace spadne do mock rezimu.
+
+Duvod: jasne oddeleni konfigurace snizuje zmatek a drzi demo spustitelne i bez funkcniho externiho API.
+
+### Timeout je sjednoceny do `AI_TIMEOUT_SECONDS`
+
+Misto provider-specific timeoutu se pouziva jeden spolecny timeout `AI_TIMEOUT_SECONDS`.
+
+Duvod: jednodussi `.env`, mene konfigurace a stejna UX logika pri cekani na odpoved modelu.
+
 ### Projekt zustava male lokalni Go demo
 
 FilipAiPilot je vedome male MVP, ne produkcni pravni system. Prioritou je rychle a srozumitelne predvest Filipovi praktickou hodnotu AI workflow nad pravnimi texty.

@@ -11,8 +11,9 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 - Aplikace bezi jako jednoduchy Go HTTP server.
 - Frontend je server-side renderovane HTML s Tailwind CSS pres CDN.
 - Drobne chovani ve frontendu je ve Vanilla JavaScriptu.
-- Bez `OPENAI_API_KEY` aplikace bezi v mock demo rezimu s pripravenymi odpovedmi.
-- S `OPENAI_API_KEY` vola OpenAI Chat Completions API pres rucni klient v Go standardni knihovne.
+- Bez odpovidajiciho API klice aplikace bezi v mock demo rezimu s pripravenymi odpovedmi.
+- S `AI_PROVIDER=openai` a `OPENAI_API_KEY` vola OpenAI Chat Completions API pres rucni klient v Go standardni knihovne.
+- S `AI_PROVIDER=gemini` a `GEMINI_API_KEY` vola Gemini GenerateContent API pres rucni klient v Go standardni knihovne.
 - Hlavni formular podporuje volbu delky vystupu: strucne, standardne, detailne.
 - Hlavni formular podporuje perspektivu vystupu: pro pravnika, pro klienta, pro vyjednavani.
 - Vystupni sekce maji tlacitko pro kopirovani textu do schranky.
@@ -20,7 +21,7 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 - Cekaci stav analyzy se renderuje primo v karte "Vystup se zobrazi tady", aby uzivatel videl spinner ve stejnem miste, kde se po dokonceni ukaze vysledek.
 - Homepage obsahuje kratky demo scenar pro Filipa s rychlymi odkazy na vhodne ulozene prompty.
 - Upload souboru probiha pred analyzou pres endpoint `/upload-text`; vytazeny text se vlozi do viditelneho textarea pole a az potom uzivatel spousti analyzu.
-- `.env.example` nastavuje `OPENAI_MODEL=gpt-5-nano` a `OPENAI_TIMEOUT_SECONDS=180`.
+- `.env.example` obsahuje `AI_PROVIDER`, `OPENAI_MODEL`, `GEMINI_MODEL` a sdileny timeout `AI_TIMEOUT_SECONDS=180`.
 - Go modul se jmenuje `filipaipilot`.
 - Projekt ma zakladni testy pro upload/parser v `internal/web/server_test.go`.
 - Adresar je git repozitar na vetvi `main`.
@@ -46,10 +47,11 @@ Projekt neprodava predstavu "AI pravnika". Ukazuje opakovatelne pracovni postupy
 
 ## Hlavni adresare a soubory
 
-- `cmd/filipaipilot/main.go` - vstupni bod aplikace, nacitani `.env`, volba mock/OpenAI klienta, spusteni serveru.
+- `cmd/filipaipilot/main.go` - vstupni bod aplikace, nacitani `.env`, volba mock/OpenAI/Gemini klienta, spusteni serveru.
 - `internal/ai/client.go` - AI interface, system prompt, prompt knihovna a volby vystupu.
 - `internal/ai/mock.go` - mock AI klient s pripravenymi vystupy pro lokalni demo bez API klice.
 - `internal/ai/openai.go` - OpenAI klient pres `net/http`, JSON response format a fallback pri nevalidnim JSON vystupu.
+- `internal/ai/gemini.go` - Gemini klient pres `net/http`, GenerateContent API a fallback pri nevalidnim JSON vystupu.
 - `internal/model/result.go` - datove struktury `Result`, `Section` a `Example`.
 - `internal/web/server.go` - HTTP routing, handlery, upload/parser souboru, renderovani sablon a chybove hlasky.
 - `internal/web/examples.go` - fiktivni ukazkove pravni texty.
@@ -85,10 +87,12 @@ Zakladni promenne:
 ADDR=:8080
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-nano
-OPENAI_TIMEOUT_SECONDS=180
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
+AI_TIMEOUT_SECONDS=180
 ```
 
-Kdyz `OPENAI_API_KEY` chybi, aplikace bezi v mock rezimu.
+Kdyz chybi API klic odpovidajici zvolenemu provideru, aplikace bezi v mock rezimu.
 
 ## Jak projekt testovat
 
@@ -126,6 +130,7 @@ Pak otevrit `http://localhost:8080`.
 - Neexistuje prihlaseni, role, opravneni ani auditni logy.
 - Neni zde anonymizace citlivych udaju.
 - OpenAI klient pouziva Chat Completions API a ocekava JSON objekt ve strukture `model.Result`.
+- Gemini klient pouziva GenerateContent API a ocekava JSON objekt ve strukture `model.Result`.
 - UI je demo dashboard, ne produkcni pravni aplikace.
 - Pri zmene statickych assetu je vhodne menit query string u `app.js` a `app.css`, aby se v prohlizeci neudrzela stara cache a nebil se novy loading UI se starymi styly.
 
